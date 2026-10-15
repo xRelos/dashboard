@@ -38,6 +38,11 @@
             --btn-secondary-bg: #f1f5f9;
             --btn-secondary-text: #475569;
             --btn-secondary-hover: #e2e8f0;
+            --chart-tick: #64748b;
+            --chart-grid: rgba(148, 163, 184, 0.15);
+            --tooltip-bg: #ffffff;
+            --tooltip-text: #0f172a;
+            --tooltip-border: #e2e8f0;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         html, body { height: 100%; }
@@ -82,6 +87,7 @@
         .add-event-form { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-input); }
         .add-event-form input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.8rem; outline: none; transition: border 0.2s; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
         .add-event-form input:focus { border-color: var(--accent-blue); }
+        .add-event-form input::placeholder { color: var(--text-faint); }
         .add-event-form button { background: var(--accent-blue); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; }
         .add-event-form button svg { width: 18px; height: 18px; }
 
@@ -185,10 +191,13 @@
         #view-tasks .priority-low { background: rgba(22, 163, 74, 0.15); color: #16a34a; }
         #view-tasks .add-task-bar { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-input); }
         #view-tasks .add-task-bar input[type="text"] { flex: 2; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
+        #view-tasks .add-task-bar input::placeholder { color: var(--text-faint); }
         #view-tasks .add-task-bar select { padding: 10px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; background: var(--card-bg); color: var(--text-primary); outline: none; cursor: pointer; }
         #view-tasks .add-task-bar button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         #view-tasks .add-task-bar button svg { width: 16px; height: 16px; }
         #view-tasks .empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; }
+        #view-tasks .tasks-not-auth { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        #view-tasks .tasks-not-auth button { background: var(--accent-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
 
         #view-settings.active { display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         #view-settings .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -199,6 +208,7 @@
         #view-settings .setting-label span { font-size: 0.75rem; color: var(--text-muted); }
         #view-settings .city-form { display: flex; gap: 8px; margin-top: 10px; }
         #view-settings .city-form input { flex: 1; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
+        #view-settings .city-form input::placeholder { color: var(--text-faint); }
         #view-settings .city-form button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
         #view-settings .city-form button svg { width: 16px; height: 16px; }
         #view-settings .btn-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
@@ -501,7 +511,7 @@
         <div id="view-tasks" class="view">
             <div class="card tasks-main">
                 <div class="section-header">
-                    <div class="section-title"><i data-lucide="check-square"></i><span>Mis tareas</span></div>
+                    <div class="section-title"><i data-lucide="check-square"></i><span>Mis tareas · Google Tasks</span></div>
                     <span class="badge-count" id="tasks-count">0</span>
                 </div>
                 <ul class="task-list" id="tasks-list"></ul>
@@ -540,11 +550,11 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="link"></i><span>Google Calendar</span></div>
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="link"></i><span>Google Calendar + Tasks</span></div>
                     <div class="setting-row">
                         <div class="setting-label">
                             <strong><span class="status-dot" id="google-status-dot"></span><span id="google-status-text">No conectado</span></strong>
-                            <span>Autoriza tu cuenta para ver y crear eventos</span>
+                            <span>Autoriza tu cuenta para ver eventos y tareas</span>
                         </div>
                         <button class="btn-secondary" id="settings-google-btn">Conectar</button>
                     </div>
@@ -552,7 +562,7 @@
                 <div class="card">
                     <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="database"></i><span>Datos</span></div>
                     <div class="setting-row">
-                        <div class="setting-label"><strong>Borrar todos los datos</strong><span>Elimina tareas y preferencias guardadas</span></div>
+                        <div class="setting-label"><strong>Borrar preferencias locales</strong><span>Elimina el tema y la ciudad (no toca Google)</span></div>
                         <button class="btn-danger" id="settings-clear-btn">Borrar</button>
                     </div>
                 </div>
@@ -565,9 +575,6 @@
 <script>
     console.log('🚀 Script iniciado');
 
-    // ============================================================
-    // CARGADOR ROBUSTO DE LUCIDE
-    // ============================================================
     var lucideReady = false;
     var lucideAttempts = 0;
     var LUCIDE_MAX_ATTEMPTS = 100;
@@ -597,9 +604,8 @@
     }
 
     const CLIENT_ID = '493262542322-u7esgck1r0n6o4hbth0uirqsup7mn0o4.apps.googleusercontent.com';
-    const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
+    const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/tasks';
 
-    // redirect_uri dinámico: funciona en GitHub Pages y en localhost
     var REDIRECT_URI = window.location.origin + window.location.pathname;
     console.log('📍 Redirect URI:', REDIRECT_URI);
 
@@ -610,9 +616,10 @@
         localStorage.setItem('dashboardSettings', JSON.stringify(settings));
     }
 
-    let tasks = safeJSON('dashboardTasks', []);
     let events = [];
     let calendarMonthEvents = [];
+    let googleTasks = [];
+    let GOOGLE_TASKS_LIST_ID = null;
     let currentCalendarDate = new Date();
     let selectedCalendarDay = null;
     let gapiInited = false;
@@ -621,9 +628,6 @@
     let weatherChart = null;
     let weatherChart24 = null;
 
-    // ============================================================
-    // PARSEAR TOKEN DEL HASH (tras la redirección de Google)
-    // ============================================================
     function parseHashAndSetToken() {
         if (!window.location.hash || window.location.hash.indexOf('access_token') === -1) {
             return false;
@@ -659,6 +663,7 @@
         updateGoogleStatus();
         loadCalendarEvents();
         loadCalendarMonthEvents();
+        loadGoogleTasks();
         return true;
     }
 
@@ -687,12 +692,33 @@
             if (targetView) targetView.classList.add('active');
             if (target === 'weather' && typeof drawWeather24hChart === 'function') drawWeather24hChart();
             if (target === 'calendar' && isAuthenticated) loadCalendarMonthEvents();
+            if (target === 'tasks') renderTasks();
             refreshIcons();
         });
     });
 
+    // ============================================================
+    // HELPERS DE TEMA PARA LAS GRÁFICAS
+    // ============================================================
+    function getChartTheme() {
+        // Leemos los valores actuales de las CSS variables
+        var cs = getComputedStyle(document.documentElement);
+        return {
+            tick: cs.getPropertyValue('--chart-tick').trim() || '#64748b',
+            grid: cs.getPropertyValue('--chart-grid').trim() || 'rgba(148, 163, 184, 0.15)',
+            tooltipBg: cs.getPropertyValue('--tooltip-bg').trim() || '#ffffff',
+            tooltipText: cs.getPropertyValue('--tooltip-text').trim() || '#0f172a',
+            tooltipBorder: cs.getPropertyValue('--tooltip-border').trim() || '#e2e8f0'
+        };
+    }
+
+    // ============================================================
+    // CHART.JS
+    // ============================================================
     function initCharts() {
         if (typeof Chart === 'undefined') return;
+        var theme = getChartTheme();
+
         const ctxDash = document.getElementById('weatherChart');
         if (ctxDash && !weatherChart) {
             const grad = ctxDash.getContext('2d').createLinearGradient(0, 0, 0, 150);
@@ -700,10 +726,44 @@
             grad.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
             weatherChart = new Chart(ctxDash, {
                 type: 'line',
-                data: { labels: [], datasets: [{ data: [], borderColor: '#f59e0b', backgroundColor: grad, borderWidth: 2, pointBackgroundColor: '#fff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }, y: { display: false } } }
+                data: { labels: [], datasets: [{ data: [], borderColor: '#f59e0b', backgroundColor: grad, borderWidth: 2, pointBackgroundColor: '#fff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.4 }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: theme.tooltipBg,
+                            titleColor: theme.tooltipText,
+                            bodyColor: theme.tooltipText,
+                            borderColor: theme.tooltipBorder,
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            titleFont: { size: 12, weight: '600' },
+                            bodyFont: { size: 13, weight: '500' },
+                            callbacks: {
+                                title: function(items) {
+                                    if (!items.length) return '';
+                                    return items[0].label + ':00';
+                                },
+                                label: function(context) {
+                                    return Math.round(context.parsed.y) + '°C';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: theme.tick, font: { size: 9 } } },
+                        y: { display: false }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }
             });
         }
+
         const ctx24 = document.getElementById('weatherChart24');
         if (ctx24 && !weatherChart24) {
             const grad24 = ctx24.getContext('2d').createLinearGradient(0, 0, 0, 200);
@@ -711,12 +771,71 @@
             grad24.addColorStop(1, 'rgba(10, 88, 202, 0.0)');
             weatherChart24 = new Chart(ctx24, {
                 type: 'line',
-                data: { labels: [], datasets: [{ data: [], borderColor: '#0a58ca', backgroundColor: grad24, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#0a58ca', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }, y: { grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => v + '°' } } } }
+                data: { labels: [], datasets: [{ data: [], borderColor: '#0a58ca', backgroundColor: grad24, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#0a58ca', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7, fill: true, tension: 0.4 }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: theme.tooltipBg,
+                            titleColor: theme.tooltipText,
+                            bodyColor: theme.tooltipText,
+                            borderColor: theme.tooltipBorder,
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            titleFont: { size: 12, weight: '600' },
+                            bodyFont: { size: 13, weight: '500' },
+                            callbacks: {
+                                title: function(items) {
+                                    if (!items.length) return '';
+                                    return 'Hora: ' + items[0].label;
+                                },
+                                label: function(context) {
+                                    return Math.round(context.parsed.y) + '°C';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: theme.tick, font: { size: 10 } } },
+                        y: { grid: { color: theme.grid, drawBorder: false }, ticks: { color: theme.tick, font: { size: 10 }, callback: v => v + '°' } }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }
             });
         }
     }
     initCharts();
+
+    // ============================================================
+    // ACTUALIZAR LAS GRÁFICAS AL CAMBIAR DE TEMA
+    // ============================================================
+    function updateChartsTheme() {
+        var theme = getChartTheme();
+
+        if (weatherChart) {
+            weatherChart.options.scales.x.ticks.color = theme.tick;
+            weatherChart.options.plugins.tooltip.backgroundColor = theme.tooltipBg;
+            weatherChart.options.plugins.tooltip.titleColor = theme.tooltipText;
+            weatherChart.options.plugins.tooltip.bodyColor = theme.tooltipText;
+            weatherChart.options.plugins.tooltip.borderColor = theme.tooltipBorder;
+            weatherChart.update('none');
+        }
+        if (weatherChart24) {
+            weatherChart24.options.scales.x.ticks.color = theme.tick;
+            weatherChart24.options.scales.y.ticks.color = theme.tick;
+            weatherChart24.options.scales.y.grid.color = theme.grid;
+            weatherChart24.options.plugins.tooltip.backgroundColor = theme.tooltipBg;
+            weatherChart24.options.plugins.tooltip.titleColor = theme.tooltipText;
+            weatherChart24.options.plugins.tooltip.bodyColor = theme.tooltipText;
+            weatherChart24.options.plugins.tooltip.borderColor = theme.tooltipBorder;
+            weatherChart24.update('none');
+        }
+    }
 
     const WMO_CODES = {
         0: { desc: 'Despejado', icon: 'sun' }, 1: { desc: 'Mayormente despejado', icon: 'sun' },
@@ -833,6 +952,102 @@
 
     loadWeatherData();
 
+    // ============================================================
+    // GOOGLE TASKS
+    // ============================================================
+    async function getOrCreateTaskList() {
+        if (GOOGLE_TASKS_LIST_ID) return GOOGLE_TASKS_LIST_ID;
+        if (!isAuthenticated) return null;
+        try {
+            var resp = await gapi.client.tasks.tasklists.list({ maxResults: 100 });
+            var lists = resp.result.items || [];
+            for (var i = 0; i < lists.length; i++) {
+                if (lists[i].title === 'Dashboard') {
+                    GOOGLE_TASKS_LIST_ID = lists[i].id;
+                    return GOOGLE_TASKS_LIST_ID;
+                }
+            }
+            var created = await gapi.client.tasks.tasklists.insert({ resource: { title: 'Dashboard' } });
+            GOOGLE_TASKS_LIST_ID = created.result.id;
+            return GOOGLE_TASKS_LIST_ID;
+        } catch (e) {
+            console.error('Error lista Tasks:', e);
+            return null;
+        }
+    }
+
+    async function loadGoogleTasks() {
+        if (!isAuthenticated) return;
+        var listId = await getOrCreateTaskList();
+        if (!listId) return;
+        try {
+            var resp = await gapi.client.tasks.tasks.list({
+                tasklist: listId,
+                showCompleted: true,
+                maxResults: 100
+            });
+            var items = resp.result.items || [];
+            googleTasks = items.map(function(t) {
+                var priority = 'med';
+                if (t.notes) {
+                    if (t.notes.indexOf('priority:high') !== -1) priority = 'high';
+                    else if (t.notes.indexOf('priority:low') !== -1) priority = 'low';
+                }
+                return {
+                    id: t.id,
+                    name: t.title || 'Sin título',
+                    done: t.status === 'completed',
+                    priority: priority,
+                    createdAt: t.updated || new Date().toISOString()
+                };
+            });
+            renderTasks();
+        } catch (e) {
+            console.error('Error cargando tareas:', e);
+        }
+    }
+
+    async function addGoogleTask(name, priority) {
+        var listId = await getOrCreateTaskList();
+        if (!listId) { alert('Conecta primero Google Calendar/Tasks'); return; }
+        try {
+            await gapi.client.tasks.tasks.insert({
+                tasklist: listId,
+                resource: { title: name, notes: 'priority:' + priority }
+            });
+            loadGoogleTasks();
+        } catch (e) {
+            console.error('Error creando tarea:', e);
+            alert('Error al crear la tarea');
+        }
+    }
+
+    async function toggleGoogleTask(task) {
+        var listId = await getOrCreateTaskList();
+        if (!listId) return;
+        try {
+            await gapi.client.tasks.tasks.patch({
+                tasklist: listId,
+                task: task.id,
+                resource: { status: task.done ? 'needsAction' : 'completed' }
+            });
+            loadGoogleTasks();
+        } catch (e) {
+            console.error('Error actualizando tarea:', e);
+        }
+    }
+
+    async function deleteGoogleTask(taskId) {
+        var listId = await getOrCreateTaskList();
+        if (!listId) return;
+        try {
+            await gapi.client.tasks.tasks.delete({ tasklist: listId, task: taskId });
+            loadGoogleTasks();
+        } catch (e) {
+            console.error('Error eliminando tarea:', e);
+        }
+    }
+
     function renderTasks() {
         const tasksList = document.getElementById('tasks-list');
         const tasksCount = document.getElementById('tasks-count');
@@ -840,20 +1055,29 @@
         const dashTaskCount = document.getElementById('dash-task-count');
         if (!tasksList) return;
 
-        const pending = tasks.filter(t => !t.done);
-        tasksCount.textContent = tasks.length;
+        if (!isAuthenticated) {
+            tasksList.innerHTML = '<li class="tasks-not-auth"><i data-lucide="log-in" style="width: 32px; height: 32px;"></i><div>Conecta Google Calendar y Tasks para ver tus tareas</div><button onclick="handleAuthClick()"><i data-lucide="log-in"></i> Conectar</button></li>';
+            tasksCount.textContent = '0';
+            if (dashTaskCount) dashTaskCount.textContent = '0';
+            if (dashTaskList) dashTaskList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">Conecta Google Tasks para ver tareas</li>';
+            refreshIcons();
+            return;
+        }
+
+        const pending = googleTasks.filter(t => !t.done);
+        tasksCount.textContent = googleTasks.length;
         tasksList.innerHTML = '';
 
-        if (tasks.length === 0) {
+        if (googleTasks.length === 0) {
             tasksList.innerHTML = '<li class="empty-state">No hay tareas. Añade una abajo 👇</li>';
         } else {
-            tasks.forEach(task => {
+            googleTasks.forEach(task => {
                 const li = document.createElement('li');
                 li.className = 'task-item' + (task.done ? ' done' : '');
                 const check = document.createElement('div');
                 check.className = 'task-check' + (task.done ? ' checked' : '');
                 check.innerHTML = task.done ? '<i data-lucide="check"></i>' : '';
-                check.addEventListener('click', () => toggleTask(task.id));
+                check.addEventListener('click', () => toggleGoogleTask(task));
                 const body = document.createElement('div');
                 body.className = 'task-body';
                 const name = document.createElement('span');
@@ -861,7 +1085,7 @@
                 name.textContent = task.name;
                 const meta = document.createElement('span');
                 meta.className = 'task-meta';
-                meta.textContent = new Date(task.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                meta.textContent = 'Google Tasks';
                 body.appendChild(name); body.appendChild(meta);
                 const priority = document.createElement('span');
                 priority.className = 'priority-badge priority-' + task.priority;
@@ -869,7 +1093,7 @@
                 const del = document.createElement('button');
                 del.className = 'btn-delete';
                 del.innerHTML = '<i data-lucide="x"></i>';
-                del.addEventListener('click', () => deleteTask(task.id));
+                del.addEventListener('click', () => deleteGoogleTask(task.id));
                 li.appendChild(check); li.appendChild(body); li.appendChild(priority); li.appendChild(del);
                 tasksList.appendChild(li);
             });
@@ -906,23 +1130,16 @@
         const input = document.getElementById('task-input');
         const priority = document.getElementById('task-priority').value;
         if (!input.value.trim()) return;
-        tasks.push({ id: Date.now(), name: input.value.trim(), priority, done: false, createdAt: new Date().toISOString() });
-        localStorage.setItem('dashboardTasks', JSON.stringify(tasks));
+        var name = input.value.trim();
         input.value = '';
-        renderTasks();
+        addGoogleTask(name, priority);
     });
 
-    function toggleTask(id) {
-        const t = tasks.find(x => x.id === id);
-        if (t) { t.done = !t.done; localStorage.setItem('dashboardTasks', JSON.stringify(tasks)); renderTasks(); }
-    }
-    function deleteTask(id) {
-        tasks = tasks.filter(x => x.id !== id);
-        localStorage.setItem('dashboardTasks', JSON.stringify(tasks));
-        renderTasks();
-    }
     renderTasks();
 
+    // ============================================================
+    // AJUSTES
+    // ============================================================
     const settingCity = document.getElementById('settings-current-city');
     if (settingCity) settingCity.textContent = settings.cityName;
 
@@ -950,8 +1167,7 @@
     document.getElementById('settings-theme-btn').addEventListener('click', () => document.getElementById('theme-toggle').click());
     document.getElementById('settings-google-btn').addEventListener('click', () => handleAuthClick());
     document.getElementById('settings-clear-btn').addEventListener('click', () => {
-        if (!confirm('¿Borrar todos los datos?')) return;
-        localStorage.removeItem('dashboardTasks');
+        if (!confirm('¿Borrar preferencias locales? (No borrará las tareas de Google)')) return;
         localStorage.removeItem('dashboardSettings');
         localStorage.removeItem('googleAuthAttempted');
         localStorage.removeItem('googleToken');
@@ -980,6 +1196,11 @@
             document.documentElement.style.setProperty('--btn-secondary-bg', '#334155');
             document.documentElement.style.setProperty('--btn-secondary-text', '#e2e8f0');
             document.documentElement.style.setProperty('--btn-secondary-hover', '#475569');
+            document.documentElement.style.setProperty('--chart-tick', '#94a3b8');
+            document.documentElement.style.setProperty('--chart-grid', 'rgba(148, 163, 184, 0.12)');
+            document.documentElement.style.setProperty('--tooltip-bg', '#1e293b');
+            document.documentElement.style.setProperty('--tooltip-text', '#f1f5f9');
+            document.documentElement.style.setProperty('--tooltip-border', '#334155');
             themeToggle.innerHTML = '<i data-lucide="sun"></i>';
         } else {
             document.documentElement.style.setProperty('--bg-body', '#e8e6e1');
@@ -999,9 +1220,16 @@
             document.documentElement.style.setProperty('--btn-secondary-bg', '#f1f5f9');
             document.documentElement.style.setProperty('--btn-secondary-text', '#475569');
             document.documentElement.style.setProperty('--btn-secondary-hover', '#e2e8f0');
+            document.documentElement.style.setProperty('--chart-tick', '#64748b');
+            document.documentElement.style.setProperty('--chart-grid', 'rgba(148, 163, 184, 0.15)');
+            document.documentElement.style.setProperty('--tooltip-bg', '#ffffff');
+            document.documentElement.style.setProperty('--tooltip-text', '#0f172a');
+            document.documentElement.style.setProperty('--tooltip-border', '#e2e8f0');
             themeToggle.innerHTML = '<i data-lucide="moon"></i>';
         }
         refreshIcons();
+        // Actualizar colores de las gráficas tras el cambio
+        if (typeof updateChartsTheme === 'function') updateChartsTheme();
     }
     themeToggle.addEventListener('click', () => {
         isDark = !isDark;
@@ -1010,6 +1238,9 @@
     });
     applyTheme();
 
+    // ============================================================
+    // CALENDARIO
+    // ============================================================
     document.getElementById('cal-prev').addEventListener('click', () => {
         currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
         if (isAuthenticated) loadCalendarMonthEvents();
@@ -1141,6 +1372,9 @@
         panel.innerHTML = html;
     }
 
+    // ============================================================
+    // GAPI + AUTH
+    // ============================================================
     function updateGoogleStatus() {
         const dot = document.getElementById('google-status-dot');
         const txt = document.getElementById('google-status-text');
@@ -1149,17 +1383,21 @@
         else { dot.className = 'status-dot off'; txt.textContent = 'No conectado'; }
     }
 
-    // ============================================================
-    // GAPI: solo inicializar el cliente, sin GIS
-    // ============================================================
     function gapiLoad() { gapi.load('client', gapiInit); }
     function gapiInit() {
-        gapi.client.init({ discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'] })
-            .then(() => { gapiInited = true; checkAuthReady(); })
+        gapi.client.init({
+            discoveryDocs: [
+                'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
+                'https://www.googleapis.com/discovery/v1/apis/tasks/v1/rest'
+            ]
+        })
+            .then(() => {
+                gapiInited = true;
+                checkAuthReady();
+            })
             .catch(e => console.error('gapi init error:', e));
     }
 
-    // Cargamos gapi cuando esté disponible
     function waitForGapi() {
         if (typeof gapi !== 'undefined' && gapi.load) {
             gapiLoad();
@@ -1167,9 +1405,6 @@
     }
     waitForGapi();
 
-    // ============================================================
-    // AUTH: construcción manual de la URL de OAuth (sin popup)
-    // ============================================================
     function handleAuthClick() {
         var authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
             'client_id=' + encodeURIComponent(CLIENT_ID) +
@@ -1180,42 +1415,36 @@
             '&prompt=consent' +
             '&state=dashboard';
 
-        console.log('🔀 Redirigiendo a Google');
         window.location.href = authUrl;
     }
     window.handleAuthClick = handleAuthClick;
 
-    // ============================================================
-    // checkAuthReady: detecta token en hash, token guardado o botón
-    // ============================================================
     function checkAuthReady() {
         if (!gapiInited) return;
 
-        // 1) ¿Venimos de una redirección con token en el hash?
         if (parseHashAndSetToken()) {
             document.getElementById('google-auth-btn').classList.remove('visible');
             refreshIcons();
             return;
         }
 
-        // 2) ¿Tenemos token guardado y aún válido?
         try {
             var saved = JSON.parse(localStorage.getItem('googleToken') || 'null');
             if (saved && saved.access_token && saved.expires_at > Date.now() + 60000) {
-                console.log('🔑 Token guardado válido, reutilizando');
                 gapi.client.setToken({ access_token: saved.access_token });
                 isAuthenticated = true;
                 updateGoogleStatus();
                 loadCalendarEvents();
                 loadCalendarMonthEvents();
+                loadGoogleTasks();
                 document.getElementById('google-auth-btn').classList.remove('visible');
                 refreshIcons();
                 return;
             }
         } catch(e) {}
 
-        // 3) No hay token: mostrar botón
         document.getElementById('google-auth-btn').classList.add('visible');
+        renderTasks();
         refreshIcons();
     }
 
