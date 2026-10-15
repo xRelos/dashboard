@@ -136,7 +136,8 @@
         #view-calendar .cal-detail-time { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 500; }
         #view-calendar .cal-detail-name { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); }
 
-        #view-weather.active { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto 1fr; gap: 20px; }
+        /* Vista clima - FORECAST ARREGLADO */
+        #view-weather.active { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto auto; gap: 20px; overflow-y: auto; }
         #view-weather .weather-current-card { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; padding: 30px; }
         #view-weather .current-main { display: flex; align-items: center; gap: 30px; }
         #view-weather .current-main .icon-big { color: #f59e0b; display: flex; }
@@ -154,13 +155,13 @@
         #view-weather .sun-row .sun-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
         #view-weather .sun-row .sun-value { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
 
-        #view-weather .forecast-week { grid-column: 1 / 3; min-height: 0; }
-        #view-weather .forecast-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; }
-        #view-weather .forecast-week-item { background: var(--bg-subtle); border-radius: 12px; padding: 15px 10px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; }
-        #view-weather .forecast-week-item .day-full { font-weight: 600; font-size: 0.8rem; color: var(--text-secondary); }
-        #view-weather .forecast-week-item .day-icon-big { color: #f59e0b; margin: 4px 0; }
-        #view-weather .forecast-week-item .temps-range { font-size: 0.75rem; display: flex; gap: 6px; font-weight: 500; }
-        #view-weather .forecast-week-item .precip { font-size: 0.7rem; color: #3b82f6; }
+        #view-weather .forecast-week { grid-column: 1 / 3; }
+        #view-weather .forecast-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 12px; }
+        #view-weather .forecast-week-item { background: var(--bg-subtle); border-radius: 12px; padding: 12px 6px; text-align: center; display: flex; flex-direction: column; gap: 5px; align-items: center; min-width: 0; }
+        #view-weather .forecast-week-item .day-full { font-weight: 600; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; }
+        #view-weather .forecast-week-item .day-icon-big { color: #f59e0b; margin: 2px 0; width: 22px; height: 22px; }
+        #view-weather .forecast-week-item .temps-range { font-size: 0.7rem; display: flex; gap: 4px; font-weight: 500; white-space: nowrap; }
+        #view-weather .forecast-week-item .precip { font-size: 0.65rem; color: #3b82f6; white-space: nowrap; }
 
         #view-tasks .tasks-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         #view-tasks .task-list { list-style: none; overflow-y: auto; flex: 1; margin-top: 15px; }
@@ -300,7 +301,7 @@
             </div>
         </div>
 
-        <!-- CALENDARIO COMPLETO -->
+        <!-- CALENDARIO -->
         <div id="view-calendar" class="view">
             <div class="card calendar-main">
                 <div class="calendar-header">
@@ -444,10 +445,7 @@
         try {
             const val = localStorage.getItem(key);
             return val ? JSON.parse(val) : fallback;
-        } catch (e) {
-            console.warn('Error leyendo', key, e);
-            return fallback;
-        }
+        } catch (e) { return fallback; }
     }
 
     const CLIENT_ID = '493262542322-u7esgck1r0n6o4hbth0uirqsup7mn0o4.apps.googleusercontent.com';
@@ -504,7 +502,6 @@
         });
     });
 
-    // ==================== LUCIDE ====================
     function refreshIcons() {
         if (typeof lucide !== 'undefined' && lucide.createIcons) {
             try { lucide.createIcons(); } catch(e) {}
@@ -633,7 +630,7 @@
                 const dayWmo = WMO_CODES[daily.weather_code[i]] || { icon: 'cloud' };
                 const div = document.createElement('div');
                 div.className = 'forecast-week-item';
-                div.innerHTML = '<span class="day-full">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon-big" style="width: 28px; height: 28px;"></i><div class="temps-range"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div><span class="precip">💧 ' + (daily.precipitation_sum ? daily.precipitation_sum[i] : 0) + ' mm</span>';
+                div.innerHTML = '<span class="day-full">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon-big" style="width: 22px; height: 22px;"></i><div class="temps-range"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div><span class="precip">💧 ' + (daily.precipitation_sum ? daily.precipitation_sum[i] : 0) + ' mm</span>';
                 grid.appendChild(div);
             }
         }
@@ -870,11 +867,7 @@
             });
             calendarMonthEvents = response.result.items || [];
             renderCalendarGrid();
-            console.log('✅ Eventos del mes cargados:', calendarMonthEvents.length);
-        } catch (e) {
-            console.error('Error calendario:', e);
-            renderCalendarGrid();
-        }
+        } catch (e) { renderCalendarGrid(); }
     }
 
     function renderCalendarGrid() {
@@ -884,7 +877,7 @@
         document.getElementById('cal-month-title').textContent = monthNames[month] + ' ' + year;
 
         const firstDay = new Date(year, month, 1);
-        let startWeekday = (firstDay.getDay() + 6) % 7; // Lunes = 0
+        let startWeekday = (firstDay.getDay() + 6) % 7;
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
         const grid = document.getElementById('cal-grid');
@@ -991,7 +984,6 @@
             client_id: CLIENT_ID, scope: SCOPES,
             callback: (resp) => {
                 if (resp.error) {
-                    console.warn('Auth silenciosa fallida:', resp.error);
                     document.getElementById('google-auth-btn').classList.add('visible');
                     refreshIcons();
                     return;
@@ -1019,16 +1011,10 @@
         if (gapiInited && gisInited) {
             const wasAuth = localStorage.getItem('googleAuthAttempted') === 'true';
             if (wasAuth) {
-                // ✅ Intento de reconexión silenciosa
-                console.log('🔄 Intentando reconectar con Google silenciosamente...');
+                console.log('🔄 Intento de reconexión silenciosa...');
                 setTimeout(() => {
-                    try {
-                        tokenClient.requestAccessToken({ prompt: '' });
-                    } catch(e) {
-                        document.getElementById('google-auth-btn').classList.add('visible');
-                    }
+                    try { tokenClient.requestAccessToken({ prompt: '' }); } catch(e) {}
                 }, 200);
-                // Por si la silenciosa no responde en 3s, mostramos el botón manual
                 setTimeout(() => {
                     if (!isAuthenticated) {
                         document.getElementById('google-auth-btn').classList.add('visible');
@@ -1039,7 +1025,6 @@
                 document.getElementById('google-auth-btn').classList.add('visible');
             }
             refreshIcons();
-            console.log('✅ Google API lista');
         }
     }
     function handleAuthClick() {
@@ -1068,9 +1053,7 @@
                 return new Date(endStr) > now;
             });
             renderCalendarEvents(events);
-        } catch (error) {
-            console.error('Error eventos:', error);
-        }
+        } catch (error) { console.error('Error eventos:', error); }
     }
 
     function renderCalendarEvents(events) {
