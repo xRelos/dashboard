@@ -575,6 +575,9 @@
 <script>
     console.log('🚀 Script iniciado');
 
+    // ============================================================
+    // CARGADOR ROBUSTO DE LUCIDE
+    // ============================================================
     var lucideReady = false;
     var lucideAttempts = 0;
     var LUCIDE_MAX_ATTEMPTS = 100;
@@ -627,8 +630,29 @@
     let weatherCache = null;
     let weatherChart = null;
     let weatherChart24 = null;
+    let silentReauthInProgress = false;
+
+    // ============================================================
+    // TOKEN: parsear hash, detectar expiración, reautenticación silenciosa
+    // ============================================================
 
     function parseHashAndSetToken() {
+        // Caso A: Google devolvió un error (silent reauth falló)
+        if (window.location.hash && window.location.hash.indexOf('error=') !== -1) {
+            var errParams = {};
+            window.location.hash.substring(1).split('&').forEach(function(pair) {
+                var parts = pair.split('=');
+                errParams[parts[0]] = decodeURIComponent(parts[1] || '');
+            });
+            console.warn('⚠️ Google devolvió error en reauth:', errParams.error);
+            try {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch(e) {}
+            sessionStorage.setItem('silentReauthFailed', String(Date.now()));
+            return false;
+        }
+
+        // Caso B: token válido en el hash
         if (!window.location.hash || window.location.hash.indexOf('access_token') === -1) {
             return false;
         }
@@ -641,14 +665,19 @@
         var expiresIn = parseInt(params.expires_in) || 3600;
         if (!accessToken) return false;
 
-        console.log('🎉 Token recibido tras redirección');
+        console.log('🎉 Token recibido (expira en', expiresIn, 'segundos)');
+
+        var grantedScopes = params.scope ? decodeURIComponent(params.scope) : '';
 
         try {
             localStorage.setItem('googleToken', JSON.stringify({
                 access_token: accessToken,
-                expires_at: Date.now() + (expiresIn * 1000)
+                expires_at: Date.now() + (expiresIn * 1000),
+                scopes: grantedScopes
             }));
             localStorage.setItem('googleAuthAttempted', 'true');
+            // Limpiar el flag de reauth fallida
+            sessionStorage.removeItem('silentReauthFailed');
         } catch(e) {}
 
         try {
@@ -660,11 +689,72 @@
         }
 
         isAuthenticated = true;
+        silentReauthInProgress = false;
         updateGoogleStatus();
         loadCalendarEvents();
         loadCalendarMonthEvents();
         loadGoogleTasks();
         return true;
+    }
+
+    function isTokenExpired() {
+        try {
+            var saved = JSON.parse(localStorage.getItem('googleToken') || 'null');
+            if (!saved || !saved.access_token) return true;
+            // Margen de 60s: si expira en menos de un minuto, lo consideramos caducado
+            return saved.expires_at < (Date.now() + 60000);
+        } catch(e) {
+            return true;
+        }
+    }
+
+    function canAttemptSilentReauth() {
+        // Si ya falló hace menos de 60s, no reintentar en bucle
+        var failedAt = parseInt(sessionStorage.getItem('silentReauthFailed') || '0', 10);
+        if (failedAt && (Date.now() - failedAt) < 60000) {
+            return false;
+        }
+        return true;
+    }
+
+    function silentReauth() {
+        if (silentReauthInProgress) return;
+        if (!canAttemptSilentReauth()) {
+            console.log('⏸️ Reauth silenciosa pospuesta (falló hace poco)');
+            document.getElementById('google-auth-btn').classList.add('visible');
+            refreshIcons();
+            return;
+        }
+        // Si estamos en file:// no tiene sentido (no hay origin válido)
+        if (window.location.protocol === 'file:') {
+            document.getElementById('google-auth-btn').classList.add('visible');
+            refreshIcons();
+            return;
+        }
+
+        silentReauthInProgress = true;
+        console.log('🔄 Renovando token silenciosamente (prompt=none)...');
+
+        var authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+            'client_id=' + encodeURIComponent(CLIENT_ID) +
+            '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+            '&response_type=token' +
+            '&scope=' + encodeURIComponent(SCOPES) +
+            '&include_granted_scopes=true' +
+            '&prompt=none' +
+            '&state=dashboard';
+
+        window.location.href = authUrl;
+    }
+
+    function isAuthError(error) {
+        if (!error) return false;
+        if (error.status === 401 || error.code === 401) return true;
+        if (error.result && error.result.error && error.result.error.code === 401) return true;
+        // gapi envuelve los errores así:
+        var json = error.result && error.result.error;
+        if (json && json.code === 401) return true;
+        return false;
     }
 
     function updateClock() {
@@ -697,11 +787,7 @@
         });
     });
 
-    // ============================================================
-    // HELPERS DE TEMA PARA LAS GRÁFICAS
-    // ============================================================
     function getChartTheme() {
-        // Leemos los valores actuales de las CSS variables
         var cs = getComputedStyle(document.documentElement);
         return {
             tick: cs.getPropertyValue('--chart-tick').trim() || '#64748b',
@@ -712,9 +798,6 @@
         };
     }
 
-    // ============================================================
-    // CHART.JS
-    // ============================================================
     function initCharts() {
         if (typeof Chart === 'undefined') return;
         var theme = getChartTheme();
@@ -728,42 +811,25 @@
                 type: 'line',
                 data: { labels: [], datasets: [{ data: [], borderColor: '#f59e0b', backgroundColor: grad, borderWidth: 2, pointBackgroundColor: '#fff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.4 }] },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             enabled: true,
-                            backgroundColor: theme.tooltipBg,
-                            titleColor: theme.tooltipText,
-                            bodyColor: theme.tooltipText,
-                            borderColor: theme.tooltipBorder,
-                            borderWidth: 1,
-                            padding: 10,
-                            cornerRadius: 8,
-                            displayColors: false,
-                            titleFont: { size: 12, weight: '600' },
-                            bodyFont: { size: 13, weight: '500' },
+                            backgroundColor: theme.tooltipBg, titleColor: theme.tooltipText, bodyColor: theme.tooltipText,
+                            borderColor: theme.tooltipBorder, borderWidth: 1, padding: 10, cornerRadius: 8, displayColors: false,
+                            titleFont: { size: 12, weight: '600' }, bodyFont: { size: 13, weight: '500' },
                             callbacks: {
-                                title: function(items) {
-                                    if (!items.length) return '';
-                                    return items[0].label + ':00';
-                                },
-                                label: function(context) {
-                                    return Math.round(context.parsed.y) + '°C';
-                                }
+                                title: function(items) { return items.length ? items[0].label + ':00' : ''; },
+                                label: function(context) { return Math.round(context.parsed.y) + '°C'; }
                             }
                         }
                     },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: theme.tick, font: { size: 9 } } },
-                        y: { display: false }
-                    },
+                    scales: { x: { grid: { display: false }, ticks: { color: theme.tick, font: { size: 9 } } }, y: { display: false } },
                     interaction: { mode: 'index', intersect: false }
                 }
             });
         }
-
         const ctx24 = document.getElementById('weatherChart24');
         if (ctx24 && !weatherChart24) {
             const grad24 = ctx24.getContext('2d').createLinearGradient(0, 0, 0, 200);
@@ -773,37 +839,21 @@
                 type: 'line',
                 data: { labels: [], datasets: [{ data: [], borderColor: '#0a58ca', backgroundColor: grad24, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#0a58ca', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7, fill: true, tension: 0.4 }] },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             enabled: true,
-                            backgroundColor: theme.tooltipBg,
-                            titleColor: theme.tooltipText,
-                            bodyColor: theme.tooltipText,
-                            borderColor: theme.tooltipBorder,
-                            borderWidth: 1,
-                            padding: 10,
-                            cornerRadius: 8,
-                            displayColors: false,
-                            titleFont: { size: 12, weight: '600' },
-                            bodyFont: { size: 13, weight: '500' },
+                            backgroundColor: theme.tooltipBg, titleColor: theme.tooltipText, bodyColor: theme.tooltipText,
+                            borderColor: theme.tooltipBorder, borderWidth: 1, padding: 10, cornerRadius: 8, displayColors: false,
+                            titleFont: { size: 12, weight: '600' }, bodyFont: { size: 13, weight: '500' },
                             callbacks: {
-                                title: function(items) {
-                                    if (!items.length) return '';
-                                    return 'Hora: ' + items[0].label;
-                                },
-                                label: function(context) {
-                                    return Math.round(context.parsed.y) + '°C';
-                                }
+                                title: function(items) { return items.length ? 'Hora: ' + items[0].label : ''; },
+                                label: function(context) { return Math.round(context.parsed.y) + '°C'; }
                             }
                         }
                     },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: theme.tick, font: { size: 10 } } },
-                        y: { grid: { color: theme.grid, drawBorder: false }, ticks: { color: theme.tick, font: { size: 10 }, callback: v => v + '°' } }
-                    },
+                    scales: { x: { grid: { display: false }, ticks: { color: theme.tick, font: { size: 10 } } }, y: { grid: { color: theme.grid, drawBorder: false }, ticks: { color: theme.tick, font: { size: 10 }, callback: v => v + '°' } } },
                     interaction: { mode: 'index', intersect: false }
                 }
             });
@@ -811,12 +861,8 @@
     }
     initCharts();
 
-    // ============================================================
-    // ACTUALIZAR LAS GRÁFICAS AL CAMBIAR DE TEMA
-    // ============================================================
     function updateChartsTheme() {
         var theme = getChartTheme();
-
         if (weatherChart) {
             weatherChart.options.scales.x.ticks.color = theme.tick;
             weatherChart.options.plugins.tooltip.backgroundColor = theme.tooltipBg;
@@ -972,12 +1018,14 @@
             return GOOGLE_TASKS_LIST_ID;
         } catch (e) {
             console.error('Error lista Tasks:', e);
+            if (isAuthError(e)) silentReauth();
             return null;
         }
     }
 
     async function loadGoogleTasks() {
         if (!isAuthenticated) return;
+        if (isTokenExpired()) { silentReauth(); return; }
         var listId = await getOrCreateTaskList();
         if (!listId) return;
         try {
@@ -1004,6 +1052,7 @@
             renderTasks();
         } catch (e) {
             console.error('Error cargando tareas:', e);
+            if (isAuthError(e)) silentReauth();
         }
     }
 
@@ -1018,7 +1067,8 @@
             loadGoogleTasks();
         } catch (e) {
             console.error('Error creando tarea:', e);
-            alert('Error al crear la tarea');
+            if (isAuthError(e)) silentReauth();
+            else alert('Error al crear la tarea');
         }
     }
 
@@ -1034,6 +1084,7 @@
             loadGoogleTasks();
         } catch (e) {
             console.error('Error actualizando tarea:', e);
+            if (isAuthError(e)) silentReauth();
         }
     }
 
@@ -1045,6 +1096,7 @@
             loadGoogleTasks();
         } catch (e) {
             console.error('Error eliminando tarea:', e);
+            if (isAuthError(e)) silentReauth();
         }
     }
 
@@ -1171,6 +1223,7 @@
         localStorage.removeItem('dashboardSettings');
         localStorage.removeItem('googleAuthAttempted');
         localStorage.removeItem('googleToken');
+        sessionStorage.removeItem('silentReauthFailed');
         location.reload();
     });
 
@@ -1228,7 +1281,6 @@
             themeToggle.innerHTML = '<i data-lucide="moon"></i>';
         }
         refreshIcons();
-        // Actualizar colores de las gráficas tras el cambio
         if (typeof updateChartsTheme === 'function') updateChartsTheme();
     }
     themeToggle.addEventListener('click', () => {
@@ -1259,6 +1311,7 @@
 
     async function loadCalendarMonthEvents() {
         if (!isAuthenticated) { renderCalendarGrid(); return; }
+        if (isTokenExpired()) { silentReauth(); return; }
         const year = currentCalendarDate.getFullYear();
         const month = currentCalendarDate.getMonth();
         const firstOfMonth = new Date(year, month, 1, 0, 0, 0);
@@ -1275,7 +1328,11 @@
             });
             calendarMonthEvents = response.result.items || [];
             renderCalendarGrid();
-        } catch (e) { renderCalendarGrid(); }
+        } catch (e) {
+            console.error('Error calendario:', e);
+            if (isAuthError(e)) silentReauth();
+            else renderCalendarGrid();
+        }
     }
 
     function renderCalendarGrid() {
@@ -1393,6 +1450,7 @@
         })
             .then(() => {
                 gapiInited = true;
+                console.log('✅ gapi listo');
                 checkAuthReady();
             })
             .catch(e => console.error('gapi init error:', e));
@@ -1414,7 +1472,6 @@
             '&include_granted_scopes=true' +
             '&prompt=consent' +
             '&state=dashboard';
-
         window.location.href = authUrl;
     }
     window.handleAuthClick = handleAuthClick;
@@ -1422,15 +1479,21 @@
     function checkAuthReady() {
         if (!gapiInited) return;
 
+        // 1) ¿Venimos de una redirección con token en el hash?
         if (parseHashAndSetToken()) {
             document.getElementById('google-auth-btn').classList.remove('visible');
             refreshIcons();
             return;
         }
 
+        // 2) ¿Tenemos token guardado y aún válido?
         try {
             var saved = JSON.parse(localStorage.getItem('googleToken') || 'null');
-            if (saved && saved.access_token && saved.expires_at > Date.now() + 60000) {
+            var tokenValid = saved && saved.access_token && saved.expires_at > Date.now() + 60000;
+            var hasTasksScope = saved && saved.scopes && saved.scopes.indexOf('tasks') !== -1;
+
+            if (tokenValid && hasTasksScope) {
+                console.log('🔑 Reutilizando token guardado (válido hasta', new Date(saved.expires_at).toLocaleTimeString(), ')');
                 gapi.client.setToken({ access_token: saved.access_token });
                 isAuthenticated = true;
                 updateGoogleStatus();
@@ -1441,14 +1504,29 @@
                 refreshIcons();
                 return;
             }
+
+            if (tokenValid && !hasTasksScope) {
+                console.warn('⚠️ Token antiguo sin Tasks. Forzando nueva autorización...');
+                localStorage.removeItem('googleToken');
+            }
         } catch(e) {}
 
+        // 3) Si ya hubo autenticación antes, intentar renovar silenciosamente
+        var wasAuth = localStorage.getItem('googleAuthAttempted') === 'true';
+        if (wasAuth && canAttemptSilentReauth()) {
+            console.log('🔄 Intentando renovar token automáticamente...');
+            silentReauth();
+            return;
+        }
+
+        // 4) No hay token ni intento previo: mostrar botón
         document.getElementById('google-auth-btn').classList.add('visible');
         renderTasks();
         refreshIcons();
     }
 
     async function loadCalendarEvents() {
+        if (isTokenExpired()) { silentReauth(); return; }
         try {
             const now = new Date();
             const twoWeeksLater = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
@@ -1468,7 +1546,10 @@
                 return new Date(endStr) > now;
             });
             renderCalendarEvents(events);
-        } catch (error) { console.error('Error eventos:', error); }
+        } catch (error) {
+            console.error('Error eventos:', error);
+            if (isAuthError(error)) silentReauth();
+        }
     }
 
     function renderCalendarEvents(events) {
@@ -1540,7 +1621,10 @@
             document.getElementById('event-form').reset();
             loadCalendarEvents();
             loadCalendarMonthEvents();
-        } catch (err) { alert('Error al crear el evento'); }
+        } catch (err) {
+            if (isAuthError(err)) silentReauth();
+            else alert('Error al crear el evento');
+        }
     });
 
     async function deleteCalendarEvent(eventId) {
@@ -1549,8 +1633,51 @@
             await gapi.client.calendar.events.delete({ 'calendarId': 'primary', 'eventId': eventId });
             loadCalendarEvents();
             loadCalendarMonthEvents();
-        } catch (error) { alert('Error al eliminar'); }
+        } catch (error) {
+            if (isAuthError(error)) silentReauth();
+            else alert('Error al eliminar');
+        }
     }
+
+    // ============================================================
+    // AUTO-REFRESCO cada 10 minutos (sin recargar la página)
+    // ============================================================
+    var REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+
+    function isUserTyping() {
+        var el = document.activeElement;
+        if (!el) return false;
+        var tag = el.tagName;
+        return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+    }
+
+    async function autoRefresh() {
+        if (isUserTyping()) {
+            console.log('⏸️ Auto-refresh pausado (usuario escribiendo)');
+            return;
+        }
+
+        console.log('🔄 Auto-refresh: actualizando datos...');
+
+        try { await loadWeatherData(); } catch(e) {}
+
+        if (isAuthenticated) {
+            // Si el token está caducado, la propia llamada dispara silentReauth
+            try { await loadCalendarEvents(); } catch(e) {}
+            try { await loadCalendarMonthEvents(); } catch(e) {}
+            try { await loadGoogleTasks(); } catch(e) {}
+        }
+
+        var weatherView = document.getElementById('view-weather');
+        if (weatherView && weatherView.classList.contains('active')) {
+            drawWeather24hChart();
+        }
+
+        console.log('✅ Auto-refresh completado');
+    }
+
+    setInterval(autoRefresh, REFRESH_INTERVAL_MS);
+    console.log('⏰ Auto-refresh programado cada 10 minutos');
 
     renderCalendarGrid();
     updateGoogleStatus();
