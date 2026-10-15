@@ -13,7 +13,6 @@
     <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <script async defer src="https://apis.google.com/js/api.js"></script>
-    <script async defer src="https://accounts.google.com/gsi/client"></script>
 
     <style>
         :root {
@@ -564,21 +563,10 @@
 </div>
 
 <script>
-    // ============================================================
-    // 0. LIMPIAR HASH DE URL al volver de la redirección de Google
-    // ============================================================
-    if (window.location.hash && window.location.hash.indexOf('access_token') !== -1) {
-        setTimeout(function() {
-            try {
-                history.replaceState(null, '', window.location.pathname + window.location.search);
-            } catch(e) {}
-        }, 500);
-    }
-
     console.log('🚀 Script iniciado');
 
     // ============================================================
-    // CARGADOR ROBUSTO DE LUCIDE (con reintentos)
+    // CARGADOR ROBUSTO DE LUCIDE
     // ============================================================
     var lucideReady = false;
     var lucideAttempts = 0;
@@ -611,7 +599,7 @@
     const CLIENT_ID = '493262542322-u7esgck1r0n6o4hbth0uirqsup7mn0o4.apps.googleusercontent.com';
     const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
 
-    // ✅ redirect_uri dinámico: funciona en GitHub Pages y en localhost
+    // redirect_uri dinámico: funciona en GitHub Pages y en localhost
     var REDIRECT_URI = window.location.origin + window.location.pathname;
     console.log('📍 Redirect URI:', REDIRECT_URI);
 
@@ -627,13 +615,52 @@
     let calendarMonthEvents = [];
     let currentCalendarDate = new Date();
     let selectedCalendarDay = null;
-    let tokenClient = null;
     let gapiInited = false;
-    let gisInited = false;
     let isAuthenticated = false;
     let weatherCache = null;
     let weatherChart = null;
     let weatherChart24 = null;
+
+    // ============================================================
+    // PARSEAR TOKEN DEL HASH (tras la redirección de Google)
+    // ============================================================
+    function parseHashAndSetToken() {
+        if (!window.location.hash || window.location.hash.indexOf('access_token') === -1) {
+            return false;
+        }
+        var params = {};
+        window.location.hash.substring(1).split('&').forEach(function(pair) {
+            var parts = pair.split('=');
+            params[parts[0]] = decodeURIComponent(parts[1] || '');
+        });
+        var accessToken = params.access_token;
+        var expiresIn = parseInt(params.expires_in) || 3600;
+        if (!accessToken) return false;
+
+        console.log('🎉 Token recibido tras redirección');
+
+        try {
+            localStorage.setItem('googleToken', JSON.stringify({
+                access_token: accessToken,
+                expires_at: Date.now() + (expiresIn * 1000)
+            }));
+            localStorage.setItem('googleAuthAttempted', 'true');
+        } catch(e) {}
+
+        try {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch(e) {}
+
+        if (typeof gapi !== 'undefined' && gapi.client && gapi.client.setToken) {
+            gapi.client.setToken({ access_token: accessToken });
+        }
+
+        isAuthenticated = true;
+        updateGoogleStatus();
+        loadCalendarEvents();
+        loadCalendarMonthEvents();
+        return true;
+    }
 
     function updateClock() {
         const clockEl = document.getElementById('clock');
@@ -927,6 +954,7 @@
         localStorage.removeItem('dashboardTasks');
         localStorage.removeItem('dashboardSettings');
         localStorage.removeItem('googleAuthAttempted');
+        localStorage.removeItem('googleToken');
         location.reload();
     });
 
@@ -1121,6 +1149,9 @@
         else { dot.className = 'status-dot off'; txt.textContent = 'No conectado'; }
     }
 
+    // ============================================================
+    // GAPI: solo inicializar el cliente, sin GIS
+    // ============================================================
     function gapiLoad() { gapi.load('client', gapiInit); }
     function gapiInit() {
         gapi.client.init({ discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'] })
@@ -1128,67 +1159,65 @@
             .catch(e => console.error('gapi init error:', e));
     }
 
+    // Cargamos gapi cuando esté disponible
+    function waitForGapi() {
+        if (typeof gapi !== 'undefined' && gapi.load) {
+            gapiLoad();
+        } else setTimeout(waitForGapi, 100);
+    }
+    waitForGapi();
+
     // ============================================================
-    // ✅ GIS init con ux_mode: 'redirect' para modo kiosko
+    // AUTH: construcción manual de la URL de OAuth (sin popup)
     // ============================================================
-    function gisInit() {
-        tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
-            scope: SCOPES,
-            ux_mode: 'redirect',
-            redirect_uri: REDIRECT_URI,
-            callback: (resp) => {
-                if (resp.error) {
-                    document.getElementById('google-auth-btn').classList.add('visible');
-                    refreshIcons();
-                    return;
-                }
+    function handleAuthClick() {
+        var authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+            'client_id=' + encodeURIComponent(CLIENT_ID) +
+            '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+            '&response_type=token' +
+            '&scope=' + encodeURIComponent(SCOPES) +
+            '&include_granted_scopes=true' +
+            '&prompt=consent' +
+            '&state=dashboard';
+
+        console.log('🔀 Redirigiendo a Google');
+        window.location.href = authUrl;
+    }
+    window.handleAuthClick = handleAuthClick;
+
+    // ============================================================
+    // checkAuthReady: detecta token en hash, token guardado o botón
+    // ============================================================
+    function checkAuthReady() {
+        if (!gapiInited) return;
+
+        // 1) ¿Venimos de una redirección con token en el hash?
+        if (parseHashAndSetToken()) {
+            document.getElementById('google-auth-btn').classList.remove('visible');
+            refreshIcons();
+            return;
+        }
+
+        // 2) ¿Tenemos token guardado y aún válido?
+        try {
+            var saved = JSON.parse(localStorage.getItem('googleToken') || 'null');
+            if (saved && saved.access_token && saved.expires_at > Date.now() + 60000) {
+                console.log('🔑 Token guardado válido, reutilizando');
+                gapi.client.setToken({ access_token: saved.access_token });
                 isAuthenticated = true;
-                localStorage.setItem('googleAuthAttempted', 'true');
-                document.getElementById('google-auth-btn').classList.remove('visible');
                 updateGoogleStatus();
                 loadCalendarEvents();
                 loadCalendarMonthEvents();
-                console.log('✅ Autenticado con Google Calendar');
-            },
-        });
-        gisInited = true;
-        checkAuthReady();
-    }
-    function waitForGoogle() {
-        if (typeof gapi !== 'undefined' && typeof google !== 'undefined' && google.accounts) {
-            gapiLoad(); gisInit();
-        } else setTimeout(waitForGoogle, 100);
-    }
-    waitForGoogle();
-
-    function checkAuthReady() {
-        if (gapiInited && gisInited) {
-            // Si volvemos con un token en el hash, significa que la redirección ha funcionado
-            var hasTokenInHash = window.location.hash && window.location.hash.indexOf('access_token') !== -1;
-            if (hasTokenInHash) {
-                console.log('🎉 Token recibido tras redirección, esperando callback...');
+                document.getElementById('google-auth-btn').classList.remove('visible');
+                refreshIcons();
                 return;
             }
-            var wasAuth = localStorage.getItem('googleAuthAttempted') === 'true';
-            if (wasAuth) {
-                // Con redirect, no podemos reconectar silenciosamente sin salir de la página
-                // Mostramos el botón para que el usuario pulse cuando quiera
-                console.log('👤 Usa el botón para reconectar con Google');
-            }
-            document.getElementById('google-auth-btn').classList.add('visible');
-            refreshIcons();
-        }
+        } catch(e) {}
+
+        // 3) No hay token: mostrar botón
+        document.getElementById('google-auth-btn').classList.add('visible');
+        refreshIcons();
     }
-    function handleAuthClick() {
-        if (!gapiInited || !gisInited) return;
-        // Con ux_mode: 'redirect', no usamos prompt 'none' para reconexión silenciosa
-        // porque redirigiría cada vez. Usamos siempre 'consent' en la primera conexión
-        // y '' en reconexiones para que sea transparente.
-        var promptValue = gapi.client.getToken() === null ? 'consent' : '';
-        tokenClient.requestAccessToken({ prompt: promptValue });
-    }
-    window.handleAuthClick = handleAuthClick;
 
     async function loadCalendarEvents() {
         try {
