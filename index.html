@@ -49,9 +49,10 @@
         .sidebar-icon { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: var(--text-faint); cursor: pointer; transition: all 0.2s ease; }
         .sidebar-icon:hover, .sidebar-icon.active { background-color: var(--card-bg); color: var(--text-primary); box-shadow: var(--shadow-sm); }
         .sidebar-icon.active svg { stroke-width: 2.5; }
+        .sidebar-icon svg { width: 22px; height: 22px; }
 
         .main-content { flex: 1; display: flex; gap: 20px; height: 100%; overflow: hidden; min-width: 0; }
-        .col-left { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 320px; }
+        .col-left { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
         .col-right { flex: 1.6; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 
         .card { background-color: var(--card-bg); border-radius: var(--border-radius); padding: 20px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; min-width: 0; }
@@ -65,11 +66,11 @@
         .next-event-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
         .next-event-time { font-size: 0.85rem; opacity: 0.9; display: flex; align-items: center; gap: 5px; }
 
-        .events-card { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+        .events-card { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .section-title { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-secondary); }
         .badge-count { background-color: var(--accent-light-blue); color: var(--accent-blue); font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
-        .event-list { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; }
+        .event-list { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; min-height: 0; }
         .event-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); gap: 10px; }
         .event-item:last-child { border-bottom: none; }
         .event-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
@@ -77,26 +78,30 @@
         .event-time { font-size: 0.75rem; color: var(--text-muted); }
         .btn-delete { background: none; border: none; color: var(--accent-red); cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; opacity: 0.5; transition: opacity 0.2s; }
         .btn-delete:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
+        .btn-delete svg { width: 16px; height: 16px; }
 
         .add-event-form { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-input); }
         .add-event-form input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.8rem; outline: none; transition: border 0.2s; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
         .add-event-form input:focus { border-color: var(--accent-blue); }
         .add-event-form button { background: var(--accent-blue); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+        .add-event-form button svg { width: 18px; height: 18px; }
 
         .weather-card { flex: 1.3; display: flex; flex-direction: column; min-height: 0; }
-        .weather-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; gap: 10px; }
+        .weather-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
         .weather-main { display: flex; align-items: center; gap: 15px; min-width: 0; }
         .weather-icon-lg { color: #f59e0b; display: flex; align-items: center; flex-shrink: 0; }
+        .weather-icon-lg svg { width: 40px; height: 40px; }
         .weather-temp { font-size: 2.8rem; font-weight: 300; line-height: 1; color: var(--text-primary); }
         .weather-desc { font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; font-weight: 500; }
         .weather-location { font-size: 0.75rem; color: var(--text-faint); margin-top: 2px; }
-        .weather-stats { display: flex; gap: 15px; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; }
+        .weather-stats { display: flex; gap: 15px; font-size: 0.8rem; color: var(--text-muted); }
         .chart-container { flex: 1; position: relative; width: 100%; min-height: 120px; margin-bottom: 15px; }
 
         .daily-forecast { display: flex; justify-content: space-between; border-top: 1px solid var(--border-light); padding-top: 15px; gap: 8px; }
         .forecast-day { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text-muted); flex: 1; min-width: 0; }
         .forecast-day .day-name { font-weight: 600; color: var(--text-secondary); }
         .forecast-day .day-icon { color: #f59e0b; }
+        .forecast-day .day-icon svg { width: 16px; height: 16px; }
         .forecast-day .day-temps { display: flex; gap: 4px; font-weight: 500; }
         .forecast-day .max-temp { color: var(--text-primary); }
         .forecast-day .min-temp { color: var(--text-faint); }
@@ -110,15 +115,16 @@
         #view-tasks.active { flex-direction: row; }
         #view-calendar.active { flex-direction: row; }
 
-        #view-calendar .calendar-main { flex: 2; display: flex; flex-direction: column; overflow: hidden; }
-        #view-calendar .calendar-detail-card { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        #view-calendar .calendar-main { flex: 2; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+        #view-calendar .calendar-detail-card { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
         #view-calendar .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
         #view-calendar .calendar-month-title { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
         #view-calendar .calendar-nav { display: flex; gap: 8px; }
         #view-calendar .cal-nav-btn { background: var(--btn-secondary-bg); border: none; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--btn-secondary-text); transition: background 0.15s; }
         #view-calendar .cal-nav-btn:hover { background: var(--btn-secondary-hover); }
+        #view-calendar .cal-nav-btn svg { width: 20px; height: 20px; }
         #view-calendar .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
-        #view-calendar .cal-weekday { text-align: center; font-size: 0.7rem; font-weight: 600; color: var(--text-faint); text-transform: uppercase; padding: 6px 0; letter-spacing: 0.5px; }
+        #view-calendar .cal-weekday { text-align: center; font-size: 0.7rem; font-weight: 600; color: var(--text-faint); text-transform: uppercase; padding: 6px 0; }
         #view-calendar .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 1fr; gap: 4px; flex: 1; min-height: 0; overflow-y: auto; }
         #view-calendar .cal-cell { background: var(--bg-subtle); border-radius: 8px; padding: 6px; min-height: 80px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; overflow: hidden; }
         #view-calendar .cal-cell:hover { background: var(--border-light); }
@@ -139,23 +145,23 @@
         #view-calendar .cal-detail-name { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); }
 
         #view-weather.active { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto auto; gap: 20px; overflow-y: auto; }
-        #view-weather .weather-current-card { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; padding: 30px; gap: 20px; }
+        #view-weather .weather-current-card { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; padding: 30px; gap: 20px; flex-wrap: wrap; }
         #view-weather .current-main { display: flex; align-items: center; gap: 30px; min-width: 0; }
         #view-weather .current-main .icon-big { color: #f59e0b; display: flex; flex-shrink: 0; }
+        #view-weather .current-main .icon-big svg { width: 70px; height: 70px; }
         #view-weather .current-main .temp-big { font-size: 4rem; font-weight: 300; line-height: 1; color: var(--text-primary); }
         #view-weather .current-main .desc-big { color: var(--text-muted); margin-top: 6px; font-size: 1rem; }
         #view-weather .current-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; flex-shrink: 0; }
         #view-weather .current-stats .stat-box { background: var(--bg-subtle); border-radius: 12px; padding: 12px 20px; }
-        #view-weather .current-stats .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        #view-weather .current-stats .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
         #view-weather .current-stats .stat-value { font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-top: 4px; }
-
         #view-weather .chart-24h { grid-column: 1 / 2; min-height: 0; }
         #view-weather .sun-card { grid-column: 2 / 3; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
         #view-weather .sun-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
         #view-weather .sun-row:last-child { border-bottom: none; }
         #view-weather .sun-row .sun-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        #view-weather .sun-row .sun-label svg { width: 16px; height: 16px; }
         #view-weather .sun-row .sun-value { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
-
         #view-weather .forecast-week { grid-column: 1 / 3; }
         #view-weather .forecast-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 12px; }
         #view-weather .forecast-week-item { background: var(--bg-subtle); border-radius: 12px; padding: 12px 6px; text-align: center; display: flex; flex-direction: column; gap: 5px; align-items: center; min-width: 0; }
@@ -164,12 +170,13 @@
         #view-weather .forecast-week-item .temps-range { font-size: 0.7rem; display: flex; gap: 4px; font-weight: 500; white-space: nowrap; }
         #view-weather .forecast-week-item .precip { font-size: 0.65rem; color: #3b82f6; white-space: nowrap; }
 
-        #view-tasks .tasks-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        #view-tasks .task-list { list-style: none; overflow-y: auto; flex: 1; margin-top: 15px; }
+        #view-tasks .tasks-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+        #view-tasks .task-list { list-style: none; overflow-y: auto; flex: 1; margin-top: 15px; min-height: 0; }
         #view-tasks .task-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-light); gap: 12px; }
         #view-tasks .task-item.done .task-name { text-decoration: line-through; color: var(--text-faint); }
         #view-tasks .task-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border-input); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
         #view-tasks .task-check.checked { background: var(--accent-green); border-color: var(--accent-green); color: white; }
+        #view-tasks .task-check svg { width: 14px; height: 14px; }
         #view-tasks .task-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
         #view-tasks .task-name { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); }
         #view-tasks .task-meta { font-size: 0.75rem; color: var(--text-muted); }
@@ -181,6 +188,7 @@
         #view-tasks .add-task-bar input[type="text"] { flex: 2; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
         #view-tasks .add-task-bar select { padding: 10px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; background: var(--card-bg); color: var(--text-primary); outline: none; cursor: pointer; }
         #view-tasks .add-task-bar button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        #view-tasks .add-task-bar button svg { width: 16px; height: 16px; }
         #view-tasks .empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; }
 
         #view-settings.active { display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
@@ -193,6 +201,7 @@
         #view-settings .city-form { display: flex; gap: 8px; margin-top: 10px; }
         #view-settings .city-form input { flex: 1; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
         #view-settings .city-form button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        #view-settings .city-form button svg { width: 16px; height: 16px; }
         #view-settings .btn-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
         #view-settings .btn-secondary:hover { background: var(--btn-secondary-hover); }
         #view-settings .btn-danger { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
@@ -209,33 +218,17 @@
             box-shadow: 0 4px 12px rgba(10, 88, 202, 0.3);
         }
         #google-auth-btn.visible { display: flex; }
+        #google-auth-btn svg { width: 16px; height: 16px; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 10px; }
 
         /* ============================================================
-           RESPONSIVE - TABLETS PEQUEÑAS Y MÓVILES
+           RESPONSIVE: TABLETS PEQUEÑAS Y MÓVILES (hasta 1024px)
+           Cualquier tablet (iPad, Galaxy Tab, etc.) usa este layout
            ============================================================ */
-
-        /* Tablet vertical (768-1024) */
         @media (max-width: 1024px) {
-            .screen { padding: 12px; gap: 12px; }
-            .sidebar { width: 52px; gap: 18px; }
-            .sidebar-icon { width: 42px; height: 42px; }
-            .col-left { min-width: 260px; }
-            .main-content { gap: 12px; }
-            .col-left, .col-right { gap: 12px; }
-            .card { padding: 16px; }
-            .clock-time { font-size: 3.5rem; }
-            #view-weather .current-main { gap: 20px; }
-            #view-weather .current-main .temp-big { font-size: 3rem; }
-            #view-weather .current-stats .stat-box { padding: 10px 12px; }
-            #view-weather .current-stats .stat-value { font-size: 1rem; }
-        }
-
-        /* Móvil grande / tablet pequeña vertical (≤768px) */
-        @media (max-width: 768px) {
             body { overflow: auto; }
             .screen {
                 flex-direction: column;
@@ -256,12 +249,14 @@
                 order: 2;
                 flex-shrink: 0;
                 background: var(--card-bg);
+                padding-bottom: env(safe-area-inset-bottom, 0);
             }
             .sidebar-icon {
                 width: 44px;
                 height: 44px;
                 border-radius: 50%;
             }
+            .sidebar-icon svg { width: 22px; height: 22px; }
             .sidebar-icon[style*="margin-top"] { margin-top: 0 !important; }
 
             .main-content {
@@ -303,7 +298,6 @@
             .weather-temp { font-size: 2.2rem; }
             .weather-desc { font-size: 0.85rem; }
             .weather-location { font-size: 0.7rem; }
-            .weather-header { flex-wrap: wrap; }
 
             /* Pronóstico del dashboard: scroll horizontal */
             .daily-forecast {
@@ -377,14 +371,13 @@
             #view-calendar .calendar-main {
                 flex: none;
                 min-height: 380px;
-                max-height: 60vh;
             }
             #view-calendar .calendar-detail-card { flex: none; }
             #view-calendar .calendar-month-title { font-size: 1.15rem; }
             #view-calendar .cal-nav-btn { width: 32px; height: 32px; }
             #view-calendar .cal-nav-btn svg { width: 16px !important; height: 16px !important; }
             #view-calendar .cal-weekday { font-size: 0.6rem; padding: 4px 0; }
-            #view-calendar .cal-cell { min-height: 55px; padding: 4px; }
+            #view-calendar .cal-cell { min-height: 60px; padding: 4px; }
             #view-calendar .cal-day-num { font-size: 0.7rem; width: 20px; height: 20px; }
             #view-calendar .cal-event-chip { font-size: 0.55rem; padding: 1px 4px; }
             #view-calendar .cal-more { font-size: 0.55rem; }
@@ -410,57 +403,76 @@
                 border-radius: 8px;
             }
             #google-auth-btn svg { width: 14px !important; height: 14px !important; }
+
+            /* En apaisado con poca altura, sidebar izquierda de nuevo para no tapar contenido */
+            @media (orientation: landscape) and (max-height: 700px) {
+                .screen { flex-direction: row; padding: 8px; gap: 8px; }
+                .sidebar {
+                    width: 54px;
+                    height: auto;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    gap: 16px;
+                    padding: 10px 0;
+                    border-top: none;
+                    border-radius: 12px;
+                    order: 0;
+                    background: var(--card-bg);
+                    box-shadow: var(--shadow-sm);
+                }
+                .sidebar-icon[style*="margin-top"] { margin-top: auto !important; }
+                .main-content {
+                    order: 0;
+                    padding: 6px;
+                    gap: 10px;
+                    flex-direction: row;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+                .view.active { flex-direction: row !important; }
+                .col-left { flex: 1; min-width: 240px; }
+                .col-right { flex: 1.4; min-width: 280px; }
+                .bottom-grid { grid-template-columns: 1fr 1fr; }
+                #view-calendar.active { flex-direction: row !important; }
+                #view-calendar .calendar-main { min-height: 0; max-height: none; }
+                #view-tasks.active { flex-direction: row !important; }
+                #view-weather.active {
+                    display: grid !important;
+                    grid-template-columns: 1.5fr 1fr;
+                    grid-template-rows: auto auto auto;
+                    overflow-y: auto;
+                }
+                #view-weather .weather-current-card { grid-column: 1 / 3; flex-direction: row; align-items: center; padding: 20px; }
+                #view-weather .chart-24h { grid-column: 1 / 2; }
+                #view-weather .sun-card { grid-column: 2 / 3; }
+                #view-weather .forecast-week { grid-column: 1 / 3; }
+                #view-weather .forecast-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); overflow-x: visible; }
+                #view-weather .forecast-week-item { flex: auto; min-width: 0; }
+                #view-settings .settings-grid { grid-template-columns: 1fr 1fr; }
+                .clock-time { font-size: 2.6rem; }
+                .clock-card { padding: 14px 12px; }
+                .card { padding: 14px; }
+                #google-auth-btn { top: 6px; right: 6px; padding: 6px 10px; font-size: 0.7rem; }
+            }
         }
 
-        /* Móvil pequeño (≤480px) */
         @media (max-width: 480px) {
-            .clock-time { font-size: 2.8rem; }
+            .clock-time { font-size: 2.6rem; }
             .weather-temp { font-size: 2rem; }
             .card { padding: 14px; }
             #view-weather .current-main .temp-big { font-size: 2.4rem; }
             #view-weather .current-main .icon-big svg { width: 42px !important; height: 42px !important; }
             #view-weather .forecast-week-item { min-width: 66px; }
             #view-calendar .calendar-month-title { font-size: 1rem; }
-            #view-calendar .cal-cell { min-height: 48px; }
+            #view-calendar .cal-cell { min-height: 52px; }
             .sidebar-icon { width: 40px; height: 40px; }
-        }
-
-        /* Landscape en móvil: sidebar a la izquierda de nuevo */
-        @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
-            .screen { flex-direction: row; padding: 8px; gap: 8px; }
-            .sidebar {
-                width: 50px;
-                height: auto;
-                flex-direction: column;
-                justify-content: flex-start;
-                gap: 14px;
-                padding: 10px 0;
-                border-top: none;
-                border-radius: 12px;
-                order: 0;
-            }
-            .sidebar-icon[style*="margin-top"] { margin-top: auto !important; }
-            .main-content {
-                order: 0;
-                padding: 8px;
-                gap: 8px;
-                flex-direction: row;
-                overflow-y: auto;
-                overflow-x: hidden;
-            }
-            .view.active { flex-direction: row !important; }
-            .col-left { min-width: 240px; }
-            .col-right { min-width: 280px; }
-            .bottom-grid { grid-template-columns: 1fr 1fr; }
-            #view-calendar.active { flex-direction: row !important; }
-            #view-weather.active { display: grid !important; grid-template-columns: 1.5fr 1fr; }
         }
     </style>
 </head>
 <body>
 
 <button id="google-auth-btn" onclick="handleAuthClick()">
-    <i data-lucide="log-in" style="width: 16px; height: 16px;"></i>
+    <i data-lucide="log-in"></i>
     Conectar Google Calendar
 </button>
 
@@ -475,7 +487,6 @@
     </aside>
 
     <main class="main-content">
-        <!-- DASHBOARD -->
         <div id="view-dashboard" class="view active">
             <div class="col-left">
                 <div class="card clock-card">
@@ -485,11 +496,11 @@
                 <div class="next-event-card" id="next-event-card" style="display: none;">
                     <div class="next-event-label">Siguiente</div>
                     <div class="next-event-title" id="next-event-title">-</div>
-                    <div class="next-event-time" id="next-event-time"><i data-lucide="clock" style="width: 14px; height: 14px;"></i><span>-</span></div>
+                    <div class="next-event-time" id="next-event-time"><i data-lucide="clock"></i><span>-</span></div>
                 </div>
                 <div class="card events-card">
                     <div class="section-header">
-                        <div class="section-title"><i data-lucide="list" style="width: 18px; height: 18px;"></i><span>Próximos 14 días</span></div>
+                        <div class="section-title"><i data-lucide="list"></i><span>Próximos 14 días</span></div>
                         <span class="badge-count" id="event-count">0</span>
                     </div>
                     <ul class="event-list" id="upcoming-list">
@@ -498,7 +509,7 @@
                     <form class="add-event-form" id="event-form">
                         <input type="text" id="event-title" placeholder="Nuevo evento..." required>
                         <input type="datetime-local" id="event-datetime" required style="flex: 1.5;">
-                        <button type="submit"><i data-lucide="plus" style="width: 18px; height: 18px;"></i></button>
+                        <button type="submit"><i data-lucide="plus"></i></button>
                     </form>
                 </div>
             </div>
@@ -506,7 +517,7 @@
                 <div class="card weather-card">
                     <div class="weather-header">
                         <div class="weather-main">
-                            <div class="weather-icon-lg" id="weather-icon-container"><i data-lucide="cloud-sun" style="width: 40px; height: 40px;"></i></div>
+                            <div class="weather-icon-lg" id="weather-icon-container"><i data-lucide="cloud-sun"></i></div>
                             <div>
                                 <div class="weather-temp" id="current-temp">--°</div>
                                 <div class="weather-desc" id="weather-desc">Cargando...</div>
@@ -524,7 +535,7 @@
                 <div class="bottom-grid">
                     <div class="card">
                         <div class="section-header">
-                            <div class="section-title"><i data-lucide="repeat" style="width: 18px; height: 18px;"></i><span>Rutinas de hoy</span></div>
+                            <div class="section-title"><i data-lucide="repeat"></i><span>Rutinas de hoy</span></div>
                             <span class="badge-count" id="routine-count">0</span>
                         </div>
                         <ul class="event-list" id="routine-list" style="flex: 1;">
@@ -533,7 +544,7 @@
                     </div>
                     <div class="card">
                         <div class="section-header">
-                            <div class="section-title"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i><span>Tareas</span></div>
+                            <div class="section-title"><i data-lucide="check-circle"></i><span>Tareas</span></div>
                             <span class="badge-count" id="dash-task-count">0</span>
                         </div>
                         <ul class="event-list" id="dash-task-list" style="flex: 1;">
@@ -544,15 +555,14 @@
             </div>
         </div>
 
-        <!-- CALENDARIO -->
         <div id="view-calendar" class="view">
             <div class="card calendar-main">
                 <div class="calendar-header">
                     <div class="calendar-month-title" id="cal-month-title">-</div>
                     <div class="calendar-nav">
-                        <button class="cal-nav-btn" id="cal-prev" title="Mes anterior"><i data-lucide="chevron-left" style="width: 20px; height: 20px;"></i></button>
-                        <button class="cal-nav-btn" id="cal-today-btn" title="Hoy" style="width: auto; padding: 0 14px; font-size: 0.8rem; font-weight: 600;">Hoy</button>
-                        <button class="cal-nav-btn" id="cal-next" title="Mes siguiente"><i data-lucide="chevron-right" style="width: 20px; height: 20px;"></i></button>
+                        <button class="cal-nav-btn" id="cal-prev" title="Mes anterior"><i data-lucide="chevron-left"></i></button>
+                        <button class="cal-nav-btn" id="cal-today-btn" style="width: auto; padding: 0 14px; font-size: 0.8rem; font-weight: 600;">Hoy</button>
+                        <button class="cal-nav-btn" id="cal-next" title="Mes siguiente"><i data-lucide="chevron-right"></i></button>
                     </div>
                 </div>
                 <div class="cal-weekdays">
@@ -569,7 +579,7 @@
 
             <div class="card calendar-detail-card">
                 <div class="section-title" style="margin-bottom: 15px;">
-                    <i data-lucide="info" style="width: 18px; height: 18px;"></i>
+                    <i data-lucide="info"></i>
                     <span>Detalle del día</span>
                 </div>
                 <div id="cal-day-detail" style="overflow-y: auto; flex: 1;">
@@ -578,11 +588,10 @@
             </div>
         </div>
 
-        <!-- CLIMA -->
         <div id="view-weather" class="view">
             <div class="card weather-current-card">
                 <div class="current-main">
-                    <div class="icon-big" id="vw-icon"><i data-lucide="cloud-sun" style="width: 70px; height: 70px;"></i></div>
+                    <div class="icon-big" id="vw-icon"><i data-lucide="cloud-sun"></i></div>
                     <div>
                         <div class="temp-big" id="vw-temp">--°</div>
                         <div class="desc-big" id="vw-desc">Cargando...</div>
@@ -597,29 +606,28 @@
             </div>
 
             <div class="card chart-24h">
-                <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="activity" style="width: 18px; height: 18px;"></i><span>Temperatura próximas 24h</span></div>
+                <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="activity"></i><span>Temperatura próximas 24h</span></div>
                 <div class="chart-container" style="min-height: 180px;"><canvas id="weatherChart24"></canvas></div>
             </div>
 
             <div class="card sun-card">
-                <div class="section-title"><i data-lucide="sun" style="width: 18px; height: 18px;"></i><span>Datos del día</span></div>
-                <div class="sun-row"><span class="sun-label"><i data-lucide="sunrise" style="width: 16px; height: 16px;"></i> Amanecer</span><span class="sun-value" id="vw-sunrise">--:--</span></div>
-                <div class="sun-row"><span class="sun-label"><i data-lucide="sunset" style="width: 16px; height: 16px;"></i> Atardecer</span><span class="sun-value" id="vw-sunset">--:--</span></div>
-                <div class="sun-row"><span class="sun-label"><i data-lucide="sun" style="width: 16px; height: 16px;"></i> UV máximo</span><span class="sun-value" id="vw-uv">--</span></div>
-                <div class="sun-row"><span class="sun-label"><i data-lucide="cloud-rain" style="width: 16px; height: 16px;"></i> Lluvia total</span><span class="sun-value" id="vw-rain">-- mm</span></div>
+                <div class="section-title"><i data-lucide="sun"></i><span>Datos del día</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="sunrise"></i> Amanecer</span><span class="sun-value" id="vw-sunrise">--:--</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="sunset"></i> Atardecer</span><span class="sun-value" id="vw-sunset">--:--</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="sun"></i> UV máximo</span><span class="sun-value" id="vw-uv">--</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="cloud-rain"></i> Lluvia total</span><span class="sun-value" id="vw-rain">-- mm</span></div>
             </div>
 
             <div class="card forecast-week">
-                <div class="section-title"><i data-lucide="calendar" style="width: 18px; height: 18px;"></i><span>Próximos 7 días</span></div>
+                <div class="section-title"><i data-lucide="calendar"></i><span>Próximos 7 días</span></div>
                 <div class="forecast-week-grid" id="vw-week-grid"></div>
             </div>
         </div>
 
-        <!-- TAREAS -->
         <div id="view-tasks" class="view">
             <div class="card tasks-main">
                 <div class="section-header">
-                    <div class="section-title"><i data-lucide="check-square" style="width: 20px; height: 20px;"></i><span>Mis tareas</span></div>
+                    <div class="section-title"><i data-lucide="check-square"></i><span>Mis tareas</span></div>
                     <span class="badge-count" id="tasks-count">0</span>
                 </div>
                 <ul class="task-list" id="tasks-list"></ul>
@@ -630,16 +638,15 @@
                         <option value="med" selected>Media</option>
                         <option value="high">Alta</option>
                     </select>
-                    <button type="submit"><i data-lucide="plus" style="width: 16px; height: 16px;"></i> Añadir</button>
+                    <button type="submit"><i data-lucide="plus"></i> Añadir</button>
                 </form>
             </div>
         </div>
 
-        <!-- AJUSTES -->
         <div id="view-settings" class="view">
             <div class="settings-grid">
                 <div class="card">
-                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="map-pin" style="width: 18px; height: 18px;"></i><span>Ubicación del clima</span></div>
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="map-pin"></i><span>Ubicación del clima</span></div>
                     <div class="setting-row" style="border-bottom: none; flex-direction: column; align-items: stretch;">
                         <div class="setting-label" style="margin-bottom: 10px;">
                             <strong id="settings-current-city">Cargando...</strong>
@@ -647,19 +654,19 @@
                         </div>
                         <form class="city-form" id="city-form">
                             <input type="text" id="city-input" placeholder="Ej: Madrid, London, Tokyo...">
-                            <button type="submit"><i data-lucide="search" style="width: 16px; height: 16px;"></i></button>
+                            <button type="submit"><i data-lucide="search"></i></button>
                         </form>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="palette" style="width: 18px; height: 18px;"></i><span>Apariencia</span></div>
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="palette"></i><span>Apariencia</span></div>
                     <div class="setting-row">
                         <div class="setting-label"><strong>Modo nocturno</strong><span>Cambia entre tema claro y oscuro</span></div>
                         <button class="btn-secondary" id="settings-theme-btn">Cambiar</button>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="link" style="width: 18px; height: 18px;"></i><span>Google Calendar</span></div>
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="link"></i><span>Google Calendar</span></div>
                     <div class="setting-row">
                         <div class="setting-label">
                             <strong><span class="status-dot" id="google-status-dot"></span><span id="google-status-text">No conectado</span></strong>
@@ -669,7 +676,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="database" style="width: 18px; height: 18px;"></i><span>Datos</span></div>
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="database"></i><span>Datos</span></div>
                     <div class="setting-row">
                         <div class="setting-label"><strong>Borrar todos los datos</strong><span>Elimina tareas y preferencias guardadas</span></div>
                         <button class="btn-danger" id="settings-clear-btn">Borrar</button>
@@ -683,6 +690,34 @@
 
 <script>
     console.log('🚀 Script iniciado');
+
+    // ============================================================
+    // CARGADOR ROBUSTO DE LUCIDE (con reintentos)
+    // ============================================================
+    var lucideReady = false;
+    var lucideAttempts = 0;
+    var LUCIDE_MAX_ATTEMPTS = 100; // 10 segundos máximo
+
+    function tryLoadLucide() {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+            lucideReady = true;
+            try { lucide.createIcons(); } catch(e) { console.warn('Error lucide:', e); }
+            console.log('✅ Lucide listo (intento ' + lucideAttempts + ')');
+            return;
+        }
+        lucideAttempts++;
+        if (lucideAttempts > LUCIDE_MAX_ATTEMPTS) {
+            console.error('❌ Lucide no cargó tras ' + LUCIDE_MAX_ATTEMPTS + ' intentos');
+            return;
+        }
+        setTimeout(tryLoadLucide, 100);
+    }
+    tryLoadLucide();
+
+    function refreshIcons() {
+        if (!lucideReady) return;
+        try { lucide.createIcons(); } catch(e) {}
+    }
 
     function safeJSON(key, fallback) {
         try {
@@ -739,16 +774,9 @@
             if (targetView) targetView.classList.add('active');
             if (target === 'weather' && typeof drawWeather24hChart === 'function') drawWeather24hChart();
             if (target === 'calendar' && isAuthenticated) loadCalendarMonthEvents();
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            refreshIcons();
         });
     });
-
-    function refreshIcons() {
-        if (typeof lucide !== 'undefined' && lucide.createIcons) {
-            try { lucide.createIcons(); } catch(e) {}
-        }
-    }
-    refreshIcons();
 
     function initCharts() {
         if (typeof Chart === 'undefined') return;
@@ -822,7 +850,7 @@
         setText('weather-humidity', current.relative_humidity_2m);
         setText('weather-wind', Math.round(current.wind_speed_10m));
         setText('weather-location', settings.cityName + ' · Máx ' + Math.round(daily.temperature_2m_max[0]) + '° · Min ' + Math.round(daily.temperature_2m_min[0]) + '°');
-        setHTML('weather-icon-container', '<i data-lucide="' + wmo.icon + '" style="width: 40px; height: 40px;"></i>');
+        setHTML('weather-icon-container', '<i data-lucide="' + wmo.icon + '"></i>');
 
         if (weatherChart) {
             const nowIndex = new Date().getHours();
@@ -842,12 +870,12 @@
                 const dayWmo = WMO_CODES[daily.weather_code[i]] || { icon: 'cloud' };
                 const div = document.createElement('div');
                 div.className = 'forecast-day';
-                div.innerHTML = '<span class="day-name">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon" style="width: 16px; height: 16px;"></i><div class="day-temps"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div>';
+                div.innerHTML = '<span class="day-name">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon"></i><div class="day-temps"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div>';
                 fc.appendChild(div);
             }
         }
 
-        setHTML('vw-icon', '<i data-lucide="' + wmo.icon + '" style="width: 70px; height: 70px;"></i>');
+        setHTML('vw-icon', '<i data-lucide="' + wmo.icon + '"></i>');
         setText('vw-temp', Math.round(current.temperature_2m) + '°');
         setText('vw-desc', wmo.desc);
         setText('vw-city', settings.cityName);
@@ -869,7 +897,7 @@
                 const dayWmo = WMO_CODES[daily.weather_code[i]] || { icon: 'cloud' };
                 const div = document.createElement('div');
                 div.className = 'forecast-week-item';
-                div.innerHTML = '<span class="day-full">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon-big" style="width: 22px; height: 22px;"></i><div class="temps-range"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div><span class="precip">💧 ' + (daily.precipitation_sum ? daily.precipitation_sum[i] : 0) + ' mm</span>';
+                div.innerHTML = '<span class="day-full">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon-big"></i><div class="temps-range"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div><span class="precip">💧 ' + (daily.precipitation_sum ? daily.precipitation_sum[i] : 0) + ' mm</span>';
                 grid.appendChild(div);
             }
         }
@@ -911,7 +939,7 @@
                 li.className = 'task-item' + (task.done ? ' done' : '');
                 const check = document.createElement('div');
                 check.className = 'task-check' + (task.done ? ' checked' : '');
-                check.innerHTML = task.done ? '<i data-lucide="check" style="width: 14px; height: 14px;"></i>' : '';
+                check.innerHTML = task.done ? '<i data-lucide="check"></i>' : '';
                 check.addEventListener('click', () => toggleTask(task.id));
                 const body = document.createElement('div');
                 body.className = 'task-body';
@@ -927,7 +955,7 @@
                 priority.textContent = task.priority === 'high' ? 'Alta' : task.priority === 'med' ? 'Media' : 'Baja';
                 const del = document.createElement('button');
                 del.className = 'btn-delete';
-                del.innerHTML = '<i data-lucide="x" style="width: 16px; height: 16px;"></i>';
+                del.innerHTML = '<i data-lucide="x"></i>';
                 del.addEventListener('click', () => deleteTask(task.id));
                 li.appendChild(check); li.appendChild(body); li.appendChild(priority); li.appendChild(del);
                 tasksList.appendChild(li);
@@ -1038,7 +1066,7 @@
             document.documentElement.style.setProperty('--btn-secondary-bg', '#334155');
             document.documentElement.style.setProperty('--btn-secondary-text', '#e2e8f0');
             document.documentElement.style.setProperty('--btn-secondary-hover', '#475569');
-            themeToggle.innerHTML = '<i data-lucide="sun" style="width: 24px; height: 24px;"></i>';
+            themeToggle.innerHTML = '<i data-lucide="sun"></i>';
         } else {
             document.documentElement.style.setProperty('--bg-body', '#e8e6e1');
             document.documentElement.style.setProperty('--bg-screen', '#f4f6f9');
@@ -1057,7 +1085,7 @@
             document.documentElement.style.setProperty('--btn-secondary-bg', '#f1f5f9');
             document.documentElement.style.setProperty('--btn-secondary-text', '#475569');
             document.documentElement.style.setProperty('--btn-secondary-hover', '#e2e8f0');
-            themeToggle.innerHTML = '<i data-lucide="moon" style="width: 24px; height: 24px;"></i>';
+            themeToggle.innerHTML = '<i data-lucide="moon"></i>';
         }
         refreshIcons();
     }
@@ -1309,7 +1337,7 @@
         const dateObj = new Date(nextStart);
         const dateStr = dateObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
         const timeStr = nextEv.start.dateTime ? dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : 'Todo el día';
-        nextEventTime.innerHTML = '<i data-lucide="clock" style="width: 14px; height: 14px;"></i><span>' + dateStr + ' · ' + timeStr + '</span>';
+        nextEventTime.innerHTML = '<i data-lucide="clock"></i><span>' + dateStr + ' · ' + timeStr + '</span>';
 
         events.forEach(event => {
             const li = document.createElement('li');
@@ -1330,7 +1358,7 @@
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'btn-delete';
             deleteBtn.addEventListener('click', () => deleteCalendarEvent(event.id));
-            deleteBtn.innerHTML = '<i data-lucide="x" style="width: 16px; height: 16px;"></i>';
+            deleteBtn.innerHTML = '<i data-lucide="x"></i>';
             li.appendChild(infoDiv); li.appendChild(deleteBtn);
             upcomingList.appendChild(li);
         });
