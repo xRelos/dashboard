@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#f4f6f9">
     <title>Dashboard Personal</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -24,7 +27,6 @@
             --border-radius: 16px;
             --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
-
             --text-primary: #0f172a;
             --text-secondary: #334155;
             --text-muted: #64748b;
@@ -38,8 +40,9 @@
             --btn-secondary-text: #475569;
             --btn-secondary-hover: #e2e8f0;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background-color: var(--bg-body); height: 100vh; width: 100vw; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+        body { background-color: var(--bg-body); width: 100vw; overflow: hidden; }
 
         .screen { background-color: var(--bg-screen); width: 100vw; height: 100vh; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
         .sidebar { width: 60px; display: flex; flex-direction: column; align-items: center; gap: 25px; padding-top: 10px; flex-shrink: 0; }
@@ -69,29 +72,29 @@
         .event-list { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; }
         .event-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); gap: 10px; }
         .event-item:last-child { border-bottom: none; }
-        .event-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+        .event-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
         .event-name { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
         .event-time { font-size: 0.75rem; color: var(--text-muted); }
         .btn-delete { background: none; border: none; color: var(--accent-red); cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; opacity: 0.5; transition: opacity 0.2s; }
         .btn-delete:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
 
         .add-event-form { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-input); }
-        .add-event-form input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.8rem; outline: none; transition: border 0.2s; background: var(--card-bg); color: var(--text-primary); }
+        .add-event-form input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.8rem; outline: none; transition: border 0.2s; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
         .add-event-form input:focus { border-color: var(--accent-blue); }
         .add-event-form button { background: var(--accent-blue); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; }
 
         .weather-card { flex: 1.3; display: flex; flex-direction: column; min-height: 0; }
-        .weather-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .weather-main { display: flex; align-items: center; gap: 15px; }
-        .weather-icon-lg { color: #f59e0b; display: flex; align-items: center; }
+        .weather-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; gap: 10px; }
+        .weather-main { display: flex; align-items: center; gap: 15px; min-width: 0; }
+        .weather-icon-lg { color: #f59e0b; display: flex; align-items: center; flex-shrink: 0; }
         .weather-temp { font-size: 2.8rem; font-weight: 300; line-height: 1; color: var(--text-primary); }
         .weather-desc { font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; font-weight: 500; }
         .weather-location { font-size: 0.75rem; color: var(--text-faint); margin-top: 2px; }
         .weather-stats { display: flex; gap: 15px; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; }
         .chart-container { flex: 1; position: relative; width: 100%; min-height: 120px; margin-bottom: 15px; }
 
-        .daily-forecast { display: flex; justify-content: space-between; border-top: 1px solid var(--border-light); padding-top: 15px; }
-        .forecast-day { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text-muted); }
+        .daily-forecast { display: flex; justify-content: space-between; border-top: 1px solid var(--border-light); padding-top: 15px; gap: 8px; }
+        .forecast-day { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text-muted); flex: 1; min-width: 0; }
         .forecast-day .day-name { font-weight: 600; color: var(--text-secondary); }
         .forecast-day .day-icon { color: #f59e0b; }
         .forecast-day .day-temps { display: flex; gap: 4px; font-weight: 500; }
@@ -107,10 +110,9 @@
         #view-tasks.active { flex-direction: row; }
         #view-calendar.active { flex-direction: row; }
 
-        /* Vista calendario */
         #view-calendar .calendar-main { flex: 2; display: flex; flex-direction: column; overflow: hidden; }
         #view-calendar .calendar-detail-card { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        #view-calendar .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        #view-calendar .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
         #view-calendar .calendar-month-title { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
         #view-calendar .calendar-nav { display: flex; gap: 8px; }
         #view-calendar .cal-nav-btn { background: var(--btn-secondary-bg); border: none; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--btn-secondary-text); transition: background 0.15s; }
@@ -136,14 +138,13 @@
         #view-calendar .cal-detail-time { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 500; }
         #view-calendar .cal-detail-name { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); }
 
-        /* Vista clima - FORECAST ARREGLADO */
         #view-weather.active { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto auto; gap: 20px; overflow-y: auto; }
-        #view-weather .weather-current-card { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; padding: 30px; }
-        #view-weather .current-main { display: flex; align-items: center; gap: 30px; }
-        #view-weather .current-main .icon-big { color: #f59e0b; display: flex; }
+        #view-weather .weather-current-card { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; padding: 30px; gap: 20px; }
+        #view-weather .current-main { display: flex; align-items: center; gap: 30px; min-width: 0; }
+        #view-weather .current-main .icon-big { color: #f59e0b; display: flex; flex-shrink: 0; }
         #view-weather .current-main .temp-big { font-size: 4rem; font-weight: 300; line-height: 1; color: var(--text-primary); }
         #view-weather .current-main .desc-big { color: var(--text-muted); margin-top: 6px; font-size: 1rem; }
-        #view-weather .current-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; }
+        #view-weather .current-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; flex-shrink: 0; }
         #view-weather .current-stats .stat-box { background: var(--bg-subtle); border-radius: 12px; padding: 12px 20px; }
         #view-weather .current-stats .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
         #view-weather .current-stats .stat-value { font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-top: 4px; }
@@ -169,15 +170,15 @@
         #view-tasks .task-item.done .task-name { text-decoration: line-through; color: var(--text-faint); }
         #view-tasks .task-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border-input); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
         #view-tasks .task-check.checked { background: var(--accent-green); border-color: var(--accent-green); color: white; }
-        #view-tasks .task-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        #view-tasks .task-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
         #view-tasks .task-name { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); }
         #view-tasks .task-meta { font-size: 0.75rem; color: var(--text-muted); }
-        #view-tasks .priority-badge { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        #view-tasks .priority-badge { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
         #view-tasks .priority-high { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
         #view-tasks .priority-med { background: rgba(217, 119, 6, 0.15); color: #d97706; }
         #view-tasks .priority-low { background: rgba(22, 163, 74, 0.15); color: #16a34a; }
         #view-tasks .add-task-bar { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-input); }
-        #view-tasks .add-task-bar input[type="text"] { flex: 2; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); }
+        #view-tasks .add-task-bar input[type="text"] { flex: 2; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
         #view-tasks .add-task-bar select { padding: 10px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; background: var(--card-bg); color: var(--text-primary); outline: none; cursor: pointer; }
         #view-tasks .add-task-bar button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         #view-tasks .empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; }
@@ -186,15 +187,15 @@
         #view-settings .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         #view-settings .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-light); gap: 15px; }
         #view-settings .setting-row:last-child { border-bottom: none; }
-        #view-settings .setting-label { display: flex; flex-direction: column; gap: 2px; }
+        #view-settings .setting-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
         #view-settings .setting-label strong { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
         #view-settings .setting-label span { font-size: 0.75rem; color: var(--text-muted); }
         #view-settings .city-form { display: flex; gap: 8px; margin-top: 10px; }
-        #view-settings .city-form input { flex: 1; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); }
+        #view-settings .city-form input { flex: 1; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: 8px; font-size: 0.85rem; outline: none; background: var(--card-bg); color: var(--text-primary); min-width: 0; }
         #view-settings .city-form button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        #view-settings .btn-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        #view-settings .btn-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
         #view-settings .btn-secondary:hover { background: var(--btn-secondary-hover); }
-        #view-settings .btn-danger { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        #view-settings .btn-danger { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
         #view-settings .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         #view-settings .status-dot.on { background: var(--accent-green); }
         #view-settings .status-dot.off { background: var(--text-faint); }
@@ -209,9 +210,251 @@
         }
         #google-auth-btn.visible { display: flex; }
 
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 10px; }
+
+        /* ============================================================
+           RESPONSIVE - TABLETS PEQUEÑAS Y MÓVILES
+           ============================================================ */
+
+        /* Tablet vertical (768-1024) */
+        @media (max-width: 1024px) {
+            .screen { padding: 12px; gap: 12px; }
+            .sidebar { width: 52px; gap: 18px; }
+            .sidebar-icon { width: 42px; height: 42px; }
+            .col-left { min-width: 260px; }
+            .main-content { gap: 12px; }
+            .col-left, .col-right { gap: 12px; }
+            .card { padding: 16px; }
+            .clock-time { font-size: 3.5rem; }
+            #view-weather .current-main { gap: 20px; }
+            #view-weather .current-main .temp-big { font-size: 3rem; }
+            #view-weather .current-stats .stat-box { padding: 10px 12px; }
+            #view-weather .current-stats .stat-value { font-size: 1rem; }
+        }
+
+        /* Móvil grande / tablet pequeña vertical (≤768px) */
+        @media (max-width: 768px) {
+            body { overflow: auto; }
+            .screen {
+                flex-direction: column;
+                padding: 0;
+                gap: 0;
+                height: 100vh;
+                width: 100vw;
+            }
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0 4px;
+                gap: 0;
+                border-top: 1px solid var(--border-light);
+                border-radius: 0;
+                order: 2;
+                flex-shrink: 0;
+                background: var(--card-bg);
+            }
+            .sidebar-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+            }
+            .sidebar-icon[style*="margin-top"] { margin-top: 0 !important; }
+
+            .main-content {
+                flex-direction: column;
+                order: 1;
+                padding: 12px;
+                gap: 12px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                flex: 1;
+                min-height: 0;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .view { height: auto; min-height: 0; }
+            .view.active { flex-direction: column !important; gap: 12px; }
+
+            .col-left, .col-right {
+                flex: none;
+                min-width: 0;
+                width: 100%;
+                gap: 12px;
+            }
+
+            .card { padding: 16px; border-radius: 14px; }
+
+            .clock-card { padding: 20px 16px; }
+            .clock-time { font-size: 3.2rem; letter-spacing: -1px; }
+            .clock-date { font-size: 0.9rem; }
+
+            .next-event-card { padding: 16px; }
+            .next-event-title { font-size: 1.15rem; }
+            .next-event-time { font-size: 0.8rem; }
+
+            .section-title { font-size: 0.9rem; }
+            .event-name { font-size: 0.85rem; }
+            .event-time { font-size: 0.7rem; }
+
+            .weather-temp { font-size: 2.2rem; }
+            .weather-desc { font-size: 0.85rem; }
+            .weather-location { font-size: 0.7rem; }
+            .weather-header { flex-wrap: wrap; }
+
+            /* Pronóstico del dashboard: scroll horizontal */
+            .daily-forecast {
+                overflow-x: auto;
+                justify-content: flex-start;
+                gap: 14px;
+                padding-bottom: 6px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .forecast-day { flex: 0 0 auto; min-width: 44px; }
+
+            .bottom-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                flex: none;
+            }
+
+            .add-event-form input { font-size: 0.85rem; padding: 10px 12px; }
+            .add-event-form button { padding: 0 14px; }
+
+            /* Vista clima detallada */
+            #view-weather.active {
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: visible;
+                gap: 12px;
+            }
+            #view-weather .weather-current-card {
+                grid-column: auto;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 20px;
+            }
+            #view-weather .current-main { gap: 15px; }
+            #view-weather .current-main .icon-big svg { width: 50px !important; height: 50px !important; }
+            #view-weather .current-main .temp-big { font-size: 2.8rem; }
+            #view-weather .current-main .desc-big { font-size: 0.85rem; }
+            #view-weather .current-stats {
+                width: 100%;
+                gap: 8px;
+            }
+            #view-weather .current-stats .stat-box { padding: 10px 8px; }
+            #view-weather .current-stats .stat-label { font-size: 0.6rem; }
+            #view-weather .current-stats .stat-value { font-size: 0.95rem; }
+
+            #view-weather .chart-24h,
+            #view-weather .sun-card,
+            #view-weather .forecast-week {
+                grid-column: auto;
+            }
+
+            /* Pronóstico semanal: scroll horizontal */
+            #view-weather .forecast-week-grid {
+                display: flex;
+                overflow-x: auto;
+                gap: 8px;
+                padding-bottom: 6px;
+                margin-top: 10px;
+                -webkit-overflow-scrolling: touch;
+            }
+            #view-weather .forecast-week-item {
+                flex: 0 0 auto;
+                min-width: 74px;
+                padding: 10px 8px;
+            }
+            #view-weather .forecast-week-item .day-full { font-size: 0.7rem; }
+
+            /* Calendario */
+            #view-calendar.active { flex-direction: column !important; gap: 12px; }
+            #view-calendar .calendar-main {
+                flex: none;
+                min-height: 380px;
+                max-height: 60vh;
+            }
+            #view-calendar .calendar-detail-card { flex: none; }
+            #view-calendar .calendar-month-title { font-size: 1.15rem; }
+            #view-calendar .cal-nav-btn { width: 32px; height: 32px; }
+            #view-calendar .cal-nav-btn svg { width: 16px !important; height: 16px !important; }
+            #view-calendar .cal-weekday { font-size: 0.6rem; padding: 4px 0; }
+            #view-calendar .cal-cell { min-height: 55px; padding: 4px; }
+            #view-calendar .cal-day-num { font-size: 0.7rem; width: 20px; height: 20px; }
+            #view-calendar .cal-event-chip { font-size: 0.55rem; padding: 1px 4px; }
+            #view-calendar .cal-more { font-size: 0.55rem; }
+
+            /* Tareas */
+            #view-tasks.active { flex-direction: column !important; }
+            #view-tasks .add-task-bar { flex-wrap: wrap; }
+            #view-tasks .add-task-bar input[type="text"] { flex: 1 1 100%; }
+            #view-tasks .add-task-bar select { flex: 1; }
+            #view-tasks .add-task-bar button { flex: 0 0 auto; }
+
+            /* Ajustes */
+            #view-settings.active { padding: 0; }
+            #view-settings .settings-grid { grid-template-columns: 1fr; gap: 12px; }
+            #view-settings .setting-row { flex-wrap: wrap; }
+
+            /* Botón Google más compacto */
+            #google-auth-btn {
+                top: 8px;
+                right: 8px;
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                border-radius: 8px;
+            }
+            #google-auth-btn svg { width: 14px !important; height: 14px !important; }
+        }
+
+        /* Móvil pequeño (≤480px) */
+        @media (max-width: 480px) {
+            .clock-time { font-size: 2.8rem; }
+            .weather-temp { font-size: 2rem; }
+            .card { padding: 14px; }
+            #view-weather .current-main .temp-big { font-size: 2.4rem; }
+            #view-weather .current-main .icon-big svg { width: 42px !important; height: 42px !important; }
+            #view-weather .forecast-week-item { min-width: 66px; }
+            #view-calendar .calendar-month-title { font-size: 1rem; }
+            #view-calendar .cal-cell { min-height: 48px; }
+            .sidebar-icon { width: 40px; height: 40px; }
+        }
+
+        /* Landscape en móvil: sidebar a la izquierda de nuevo */
+        @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+            .screen { flex-direction: row; padding: 8px; gap: 8px; }
+            .sidebar {
+                width: 50px;
+                height: auto;
+                flex-direction: column;
+                justify-content: flex-start;
+                gap: 14px;
+                padding: 10px 0;
+                border-top: none;
+                border-radius: 12px;
+                order: 0;
+            }
+            .sidebar-icon[style*="margin-top"] { margin-top: auto !important; }
+            .main-content {
+                order: 0;
+                padding: 8px;
+                gap: 8px;
+                flex-direction: row;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            .view.active { flex-direction: row !important; }
+            .col-left { min-width: 240px; }
+            .col-right { min-width: 280px; }
+            .bottom-grid { grid-template-columns: 1fr 1fr; }
+            #view-calendar.active { flex-direction: row !important; }
+            #view-weather.active { display: grid !important; grid-template-columns: 1.5fr 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -471,7 +714,6 @@
     let weatherChart = null;
     let weatherChart24 = null;
 
-    // ==================== RELOJ ====================
     function updateClock() {
         const clockEl = document.getElementById('clock');
         const dateEl = document.getElementById('date');
@@ -487,7 +729,6 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ==================== NAVEGACIÓN ====================
     document.querySelectorAll('.sidebar-icon[data-view]').forEach(icon => {
         icon.addEventListener('click', () => {
             document.querySelectorAll('.sidebar-icon').forEach(i => i.classList.remove('active'));
@@ -509,7 +750,6 @@
     }
     refreshIcons();
 
-    // ==================== CHART.JS ====================
     function initCharts() {
         if (typeof Chart === 'undefined') return;
         const ctxDash = document.getElementById('weatherChart');
@@ -525,19 +765,18 @@
         }
         const ctx24 = document.getElementById('weatherChart24');
         if (ctx24 && !weatherChart24) {
-            const grad = ctx24.getContext('2d').createLinearGradient(0, 0, 0, 200);
-            grad.addColorStop(0, 'rgba(10, 88, 202, 0.25)');
-            grad.addColorStop(1, 'rgba(10, 88, 202, 0.0)');
+            const grad24 = ctx24.getContext('2d').createLinearGradient(0, 0, 0, 200);
+            grad24.addColorStop(0, 'rgba(10, 88, 202, 0.25)');
+            grad24.addColorStop(1, 'rgba(10, 88, 202, 0.0)');
             weatherChart24 = new Chart(ctx24, {
                 type: 'line',
-                data: { labels: [], datasets: [{ data: [], borderColor: '#0a58ca', backgroundColor: grad, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#0a58ca', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4 }] },
+                data: { labels: [], datasets: [{ data: [], borderColor: '#0a58ca', backgroundColor: grad24, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#0a58ca', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }, y: { grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => v + '°' } } } }
             });
         }
     }
     initCharts();
 
-    // ==================== CLIMA ====================
     const WMO_CODES = {
         0: { desc: 'Despejado', icon: 'sun' }, 1: { desc: 'Mayormente despejado', icon: 'sun' },
         2: { desc: 'Parcialmente nublado', icon: 'cloud-sun' }, 3: { desc: 'Nublado', icon: 'cloud' },
@@ -653,7 +892,6 @@
 
     loadWeatherData();
 
-    // ==================== TAREAS ====================
     function renderTasks() {
         const tasksList = document.getElementById('tasks-list');
         const tasksCount = document.getElementById('tasks-count');
@@ -744,7 +982,6 @@
     }
     renderTasks();
 
-    // ==================== AJUSTES ====================
     const settingCity = document.getElementById('settings-current-city');
     if (settingCity) settingCity.textContent = settings.cityName;
 
@@ -779,7 +1016,6 @@
         location.reload();
     });
 
-    // ==================== MODO NOCTURNO ====================
     const themeToggle = document.getElementById('theme-toggle');
     let isDark = localStorage.getItem('dashboardTheme') === 'dark';
 
@@ -832,7 +1068,6 @@
     });
     applyTheme();
 
-    // ==================== CALENDARIO ====================
     document.getElementById('cal-prev').addEventListener('click', () => {
         currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
         if (isAuthenticated) loadCalendarMonthEvents();
@@ -964,7 +1199,6 @@
         panel.innerHTML = html;
     }
 
-    // ==================== GOOGLE CALENDAR ====================
     function updateGoogleStatus() {
         const dot = document.getElementById('google-status-dot');
         const txt = document.getElementById('google-status-text');
@@ -994,7 +1228,6 @@
                 updateGoogleStatus();
                 loadCalendarEvents();
                 loadCalendarMonthEvents();
-                console.log('✅ Autenticado con Google Calendar');
             },
         });
         gisInited = true;
@@ -1011,7 +1244,6 @@
         if (gapiInited && gisInited) {
             const wasAuth = localStorage.getItem('googleAuthAttempted') === 'true';
             if (wasAuth) {
-                console.log('🔄 Intento de reconexión silenciosa...');
                 setTimeout(() => {
                     try { tokenClient.requestAccessToken({ prompt: '' }); } catch(e) {}
                 }, 200);
