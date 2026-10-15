@@ -9,10 +9,8 @@
     </style>
     <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <!-- Google API Client (gapi) -->
-    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoad()"></script>
-    <!-- Google Identity Services (GIS) -->
-    <script async defer src="https://accounts.google.com/gsi/client" onload="gisInit()"></script>
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+    <script async defer src="https://accounts.google.com/gsi/client"></script>
 
     <style>
         :root {
@@ -23,34 +21,30 @@
             --text-muted: #64748b;
             --accent-blue: #0a58ca;
             --accent-light-blue: #e0e7ff;
+            --accent-green: #16a34a;
+            --accent-red: #ef4444;
             --border-radius: 16px;
             --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
         body { background-color: var(--bg-body); height: 100vh; width: 100vw; overflow: hidden; }
 
-        .screen {
-            background-color: var(--bg-screen);
-            width: 100vw; height: 100vh;
-            display: flex; padding: 20px; gap: 20px; overflow: hidden;
-        }
-
+        .screen { background-color: var(--bg-screen); width: 100vw; height: 100vh; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
         .sidebar { width: 60px; display: flex; flex-direction: column; align-items: center; gap: 25px; padding-top: 10px; flex-shrink: 0; }
         .sidebar-icon { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #94a3b8; cursor: pointer; transition: all 0.2s ease; }
         .sidebar-icon:hover, .sidebar-icon.active { background-color: var(--card-bg); color: var(--text-main); box-shadow: var(--shadow-sm); }
         .sidebar-icon.active svg { stroke-width: 2.5; }
 
-        .main-content { flex: 1; display: flex; gap: 20px; height: 100%; overflow: hidden; }
+        .main-content { flex: 1; display: flex; gap: 20px; height: 100%; overflow: hidden; min-width: 0; }
         .col-left { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 320px; }
-        .col-right { flex: 1.6; display: flex; flex-direction: column; gap: 20px; }
+        .col-right { flex: 1.6; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 
-        .card { background-color: var(--card-bg); border-radius: var(--border-radius); padding: 20px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; }
+        .card { background-color: var(--card-bg); border-radius: var(--border-radius); padding: 20px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; min-width: 0; }
 
         .clock-card { align-items: center; justify-content: center; padding: 30px 20px; flex: 0 0 auto; }
         .clock-time { font-size: 4.5rem; font-weight: 300; letter-spacing: -2px; line-height: 1; color: #0f172a; }
-        .clock-date { font-size: 1rem; color: var(--text-muted); margin-top: 8px; font-weight: 400; }
+        .clock-date { font-size: 1rem; color: var(--text-muted); margin-top: 8px; }
 
         .next-event-card { background-color: var(--accent-blue); color: white; padding: 20px; border-radius: var(--border-radius); flex: 0 0 auto; box-shadow: 0 10px 20px -5px rgba(10, 88, 202, 0.4); }
         .next-event-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; font-weight: 600; margin-bottom: 6px; }
@@ -62,9 +56,9 @@
         .section-title { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; color: #334155; }
         .badge-count { background-color: var(--accent-light-blue); color: var(--accent-blue); font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
         .event-list { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; }
-        .event-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .event-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; gap: 10px; }
         .event-item:last-child { border-bottom: none; }
-        .event-info { display: flex; flex-direction: column; gap: 2px; }
+        .event-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
         .event-name { font-size: 0.9rem; font-weight: 500; color: #1e293b; }
         .event-time { font-size: 0.75rem; color: var(--text-muted); }
         .btn-delete { background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; opacity: 0.5; transition: opacity 0.2s; }
@@ -75,7 +69,7 @@
         .add-event-form input:focus { border-color: var(--accent-blue); }
         .add-event-form button { background: var(--accent-blue); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; }
 
-        .weather-card { flex: 1.3; display: flex; flex-direction: column; }
+        .weather-card { flex: 1.3; display: flex; flex-direction: column; min-height: 0; }
         .weather-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .weather-main { display: flex; align-items: center; gap: 15px; }
         .weather-icon-lg { color: #f59e0b; display: flex; align-items: center; }
@@ -93,24 +87,82 @@
         .forecast-day .max-temp { color: #1e293b; }
         .forecast-day .min-temp { color: #94a3b8; }
 
-        .bottom-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .routine-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
-        .routine-info { display: flex; flex-direction: column; gap: 2px; }
-        .routine-name { font-size: 0.9rem; font-weight: 500; }
-        .routine-time { font-size: 0.75rem; color: var(--text-muted); }
+        .bottom-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: 0; }
 
-        .task-completed { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; gap: 10px; }
-        .check-circle { width: 60px; height: 60px; background-color: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .task-title { font-weight: 600; color: #1e293b; font-size: 1rem; }
-        .task-subtitle { font-size: 0.8rem; color: #94a3b8; }
-
+        /* --- Vistas --- */
         .view { display: none; height: 100%; width: 100%; }
         .view.active { display: flex; gap: 20px; }
-        .full-view { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-md); text-align: center; padding: 40px; }
-        .full-view h2 { font-size: 2rem; margin-bottom: 10px; color: var(--text-main); }
-        .full-view p { color: var(--text-muted); max-width: 400px; line-height: 1.6; }
 
-        /* Botón de autorización de Google */
+        #view-dashboard.active { flex-direction: row; }
+        #view-tasks.active { flex-direction: row; }
+
+        #view-weather.active {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            grid-template-rows: auto auto 1fr;
+            gap: 20px;
+        }
+        #view-weather .weather-current-card { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; padding: 30px; }
+        #view-weather .current-main { display: flex; align-items: center; gap: 30px; }
+        #view-weather .current-main .icon-big { color: #f59e0b; display: flex; }
+        #view-weather .current-main .temp-big { font-size: 4rem; font-weight: 300; line-height: 1; color: #0f172a; }
+        #view-weather .current-main .desc-big { color: var(--text-muted); margin-top: 6px; font-size: 1rem; }
+        #view-weather .current-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; }
+        #view-weather .current-stats .stat-box { background: #f8fafc; border-radius: 12px; padding: 12px 20px; }
+        #view-weather .current-stats .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        #view-weather .current-stats .stat-value { font-size: 1.2rem; font-weight: 600; color: #0f172a; margin-top: 4px; }
+
+        #view-weather .chart-24h { grid-column: 1 / 2; min-height: 0; }
+        #view-weather .sun-card { grid-column: 2 / 3; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+        #view-weather .sun-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        #view-weather .sun-row:last-child { border-bottom: none; }
+        #view-weather .sun-row .sun-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        #view-weather .sun-row .sun-value { font-size: 1rem; font-weight: 600; color: #0f172a; }
+
+        #view-weather .forecast-week { grid-column: 1 / 3; min-height: 0; }
+        #view-weather .forecast-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; }
+        #view-weather .forecast-week-item { background: #f8fafc; border-radius: 12px; padding: 15px 10px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+        #view-weather .forecast-week-item .day-full { font-weight: 600; font-size: 0.8rem; color: #334155; }
+        #view-weather .forecast-week-item .day-icon-big { color: #f59e0b; margin: 4px 0; }
+        #view-weather .forecast-week-item .temps-range { font-size: 0.75rem; display: flex; gap: 6px; font-weight: 500; }
+        #view-weather .forecast-week-item .precip { font-size: 0.7rem; color: #3b82f6; }
+
+        #view-tasks .tasks-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        #view-tasks .task-list { list-style: none; overflow-y: auto; flex: 1; margin-top: 15px; }
+        #view-tasks .task-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #f1f5f9; gap: 12px; }
+        #view-tasks .task-item.done .task-name { text-decoration: line-through; color: #94a3b8; }
+        #view-tasks .task-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
+        #view-tasks .task-check.checked { background: var(--accent-green); border-color: var(--accent-green); color: white; }
+        #view-tasks .task-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        #view-tasks .task-name { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
+        #view-tasks .task-meta { font-size: 0.75rem; color: var(--text-muted); }
+        #view-tasks .priority-badge { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        #view-tasks .priority-high { background: #fee2e2; color: #dc2626; }
+        #view-tasks .priority-med { background: #fef3c7; color: #d97706; }
+        #view-tasks .priority-low { background: #dcfce7; color: #16a34a; }
+        #view-tasks .add-task-bar { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
+        #view-tasks .add-task-bar input[type="text"] { flex: 2; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; outline: none; }
+        #view-tasks .add-task-bar select { padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; background: white; outline: none; cursor: pointer; }
+        #view-tasks .add-task-bar button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        #view-tasks .empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; }
+
+        #view-settings.active { display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        #view-settings .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        #view-settings .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f1f5f9; gap: 15px; }
+        #view-settings .setting-row:last-child { border-bottom: none; }
+        #view-settings .setting-label { display: flex; flex-direction: column; gap: 2px; }
+        #view-settings .setting-label strong { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+        #view-settings .setting-label span { font-size: 0.75rem; color: var(--text-muted); }
+        #view-settings .city-form { display: flex; gap: 8px; margin-top: 10px; }
+        #view-settings .city-form input { flex: 1; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; outline: none; }
+        #view-settings .city-form button { background: var(--accent-blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        #view-settings .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        #view-settings .btn-secondary:hover { background: #e2e8f0; }
+        #view-settings .btn-danger { background: #fee2e2; color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        #view-settings .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        #view-settings .status-dot.on { background: var(--accent-green); }
+        #view-settings .status-dot.off { background: #cbd5e1; }
+
         #google-auth-btn {
             position: fixed; top: 15px; right: 15px; z-index: 999;
             background: var(--accent-blue); color: white; border: none;
@@ -118,19 +170,16 @@
             font-size: 0.85rem; font-weight: 600; display: none;
             align-items: center; gap: 8px;
             box-shadow: 0 4px 12px rgba(10, 88, 202, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        #google-auth-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(10, 88, 202, 0.4); }
         #google-auth-btn.visible { display: flex; }
 
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<!-- Botón de login con Google -->
 <button id="google-auth-btn" onclick="handleAuthClick()">
     <i data-lucide="log-in" style="width: 16px; height: 16px;"></i>
     Conectar Google Calendar
@@ -204,280 +253,219 @@
                     <div class="card">
                         <div class="section-header">
                             <div class="section-title"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i><span>Tareas</span></div>
+                            <span class="badge-count" id="dash-task-count">0</span>
                         </div>
-                        <div class="task-completed">
-                            <div class="check-circle"><i data-lucide="check" style="width: 30px; height: 30px;"></i></div>
-                            <div class="task-title">Todo hecho</div>
-                            <div class="task-subtitle">No quedan tareas pendientes</div>
-                        </div>
+                        <ul class="event-list" id="dash-task-list" style="flex: 1;">
+                            <li style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">Sin tareas pendientes</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="view-weather" class="view"><div class="full-view"><i data-lucide="thermometer" style="width: 48px; height: 48px; color: #f59e0b; margin-bottom: 20px;"></i><h2>Vista Detallada del Clima</h2><p>Aquí puedes expandir la gráfica del clima, añadir pronósticos por horas, días de la semana, calidad del aire, etc.</p></div></div>
-        <div id="view-tasks" class="view"><div class="full-view"><i data-lucide="check-square" style="width: 48px; height: 48px; color: #16a34a; margin-bottom: 20px;"></i><h2>Gestor de Tareas</h2><p>Aquí puedes crear una lista de tareas completa, con prioridades, fechas de vencimiento y sincronización con Google Tasks o Trello.</p></div></div>
-        <div id="view-settings" class="view"><div class="full-view"><i data-lucide="settings-2" style="width: 48px; height: 48px; color: #64748b; margin-bottom: 20px;"></i><h2>Ajustes</h2><p>Configuración de la aplicación: Tema oscuro, enlace con Google Calendar, ubicación para el clima, etc.</p></div></div>
+
+        <div id="view-weather" class="view">
+            <div class="card weather-current-card">
+                <div class="current-main">
+                    <div class="icon-big" id="vw-icon"><i data-lucide="cloud-sun" style="width: 70px; height: 70px;"></i></div>
+                    <div>
+                        <div class="temp-big" id="vw-temp">--°</div>
+                        <div class="desc-big" id="vw-desc">Cargando...</div>
+                        <div class="desc-big" id="vw-city" style="font-size: 0.85rem; margin-top: 4px;">-</div>
+                    </div>
+                </div>
+                <div class="current-stats">
+                    <div class="stat-box"><div class="stat-label">Sensación</div><div class="stat-value" id="vw-feels">--°</div></div>
+                    <div class="stat-box"><div class="stat-label">Humedad</div><div class="stat-value" id="vw-hum">--%</div></div>
+                    <div class="stat-box"><div class="stat-label">Viento</div><div class="stat-value" id="vw-wind">-- km/h</div></div>
+                </div>
+            </div>
+
+            <div class="card chart-24h">
+                <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="activity" style="width: 18px; height: 18px;"></i><span>Temperatura próximas 24h</span></div>
+                <div class="chart-container" style="min-height: 180px;"><canvas id="weatherChart24"></canvas></div>
+            </div>
+
+            <div class="card sun-card">
+                <div class="section-title"><i data-lucide="sun" style="width: 18px; height: 18px;"></i><span>Datos del día</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="sunrise" style="width: 16px; height: 16px;"></i> Amanecer</span><span class="sun-value" id="vw-sunrise">--:--</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="sunset" style="width: 16px; height: 16px;"></i> Atardecer</span><span class="sun-value" id="vw-sunset">--:--</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="sun" style="width: 16px; height: 16px;"></i> UV máximo</span><span class="sun-value" id="vw-uv">--</span></div>
+                <div class="sun-row"><span class="sun-label"><i data-lucide="cloud-rain" style="width: 16px; height: 16px;"></i> Lluvia total</span><span class="sun-value" id="vw-rain">-- mm</span></div>
+            </div>
+
+            <div class="card forecast-week">
+                <div class="section-title"><i data-lucide="calendar" style="width: 18px; height: 18px;"></i><span>Próximos 7 días</span></div>
+                <div class="forecast-week-grid" id="vw-week-grid"></div>
+            </div>
+        </div>
+
+        <div id="view-tasks" class="view">
+            <div class="card tasks-main">
+                <div class="section-header">
+                    <div class="section-title"><i data-lucide="check-square" style="width: 20px; height: 20px;"></i><span>Mis tareas</span></div>
+                    <span class="badge-count" id="tasks-count">0</span>
+                </div>
+                <ul class="task-list" id="tasks-list"></ul>
+                <form class="add-task-bar" id="add-task-form">
+                    <input type="text" id="task-input" placeholder="Nueva tarea..." required>
+                    <select id="task-priority">
+                        <option value="low">Baja</option>
+                        <option value="med" selected>Media</option>
+                        <option value="high">Alta</option>
+                    </select>
+                    <button type="submit"><i data-lucide="plus" style="width: 16px; height: 16px;"></i> Añadir</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="view-settings" class="view">
+            <div class="settings-grid">
+                <div class="card">
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="map-pin" style="width: 18px; height: 18px;"></i><span>Ubicación del clima</span></div>
+                    <div class="setting-row" style="border-bottom: none; flex-direction: column; align-items: stretch;">
+                        <div class="setting-label" style="margin-bottom: 10px;">
+                            <strong id="settings-current-city">Cargando...</strong>
+                            <span>Escribe una ciudad y pulsa Buscar.</span>
+                        </div>
+                        <form class="city-form" id="city-form">
+                            <input type="text" id="city-input" placeholder="Ej: Madrid, London, Tokyo...">
+                            <button type="submit"><i data-lucide="search" style="width: 16px; height: 16px;"></i></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="palette" style="width: 18px; height: 18px;"></i><span>Apariencia</span></div>
+                    <div class="setting-row">
+                        <div class="setting-label"><strong>Modo nocturno</strong><span>Cambia entre tema claro y oscuro</span></div>
+                        <button class="btn-secondary" id="settings-theme-btn">Cambiar</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="link" style="width: 18px; height: 18px;"></i><span>Google Calendar</span></div>
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <strong><span class="status-dot" id="google-status-dot"></span><span id="google-status-text">No conectado</span></strong>
+                            <span>Autoriza tu cuenta para ver y crear eventos</span>
+                        </div>
+                        <button class="btn-secondary" id="settings-google-btn">Conectar</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="section-title" style="margin-bottom: 15px;"><i data-lucide="database" style="width: 18px; height: 18px;"></i><span>Datos</span></div>
+                    <div class="setting-row">
+                        <div class="setting-label"><strong>Borrar todos los datos</strong><span>Elimina tareas y preferencias guardadas</span></div>
+                        <button class="btn-danger" id="settings-clear-btn">Borrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 </div>
 
 <script>
-    // ==========================================
-    // CONFIGURACIÓN
-    // ==========================================
+    // ==================== BOOT ====================
+    console.log('🚀 Script iniciado');
+
+    // Función segura para leer localStorage
+    function safeJSON(key, fallback) {
+        try {
+            const val = localStorage.getItem(key);
+            return val ? JSON.parse(val) : fallback;
+        } catch (e) {
+            console.warn('Error leyendo', key, e);
+            return fallback;
+        }
+    }
+
+    // ==================== CONFIG ====================
     const CLIENT_ID = '493262542322-u7esgck1r0n6o4hbth0uirqsup7mn0o4.apps.googleusercontent.com';
     const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
 
-    // Coordenadas de Murcia
-    const LATITUDE = 37.9922;
-    const LONGITUDE = -1.1307;
-    const CITY_NAME = 'Murcia';
-
-    // ==========================================
-    // VARIABLES GLOBALES
-    // ==========================================
-    let tokenClient;
+    let settings = safeJSON('dashboardSettings', { latitude: 37.9922, longitude: -1.1307, cityName: 'Murcia' });
+    let tasks = safeJSON('dashboardTasks', []);
+    let events = [];
+    let tokenClient = null;
     let gapiInited = false;
     let gisInited = false;
     let isAuthenticated = false;
+    let weatherCache = null;
+    let weatherChart = null;
+    let weatherChart24 = null;
 
-    // ==========================================
-    // 1. INICIALIZACIÓN DE GOOGLE API (sin API Key)
-    // ==========================================
-    function gapiLoad() {
-        gapi.load('client', gapiInit);
-    }
-
-    function gapiInit() {
-        gapi.client.init({
-            discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-        }).then(function() {
-            gapiInited = true;
-            checkAuthReady();
-        }).catch(function(err) {
-            console.error('Error inicializando gapi:', err);
-        });
-    }
-
-    function gisInit() {
-        tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
-            scope: SCOPES,
-            callback: (resp) => {
-                if (resp.error !== undefined) {
-                    console.error('Error de autenticación:', resp);
-                    alert('Error al conectar con Google: ' + resp.error);
-                    return;
-                }
-                isAuthenticated = true;
-                console.log('✅ Autenticado con Google Calendar');
-                document.getElementById('google-auth-btn').classList.remove('visible');
-                loadCalendarEvents();
-            },
-        });
-        gisInited = true;
-        checkAuthReady();
-    }
-
-    function checkAuthReady() {
-        if (gapiInited && gisInited) {
-            document.getElementById('google-auth-btn').classList.add('visible');
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
-    }
-
-    function handleAuthClick() {
-        if (!gapiInited || !gisInited) {
-            alert('Espera un momento, aún se está cargando Google API...');
-            return;
-        }
-        if (gapi.client.getToken() === null) {
-            tokenClient.requestAccessToken({ prompt: 'consent' });
-        } else {
-            tokenClient.requestAccessToken({ prompt: '' });
-        }
-    }
-
-    // ==========================================
-    // 2. CARGAR EVENTOS DE GOOGLE CALENDAR
-    // ==========================================
-    async function loadCalendarEvents() {
-        try {
-            const now = new Date().toISOString();
-            const response = await gapi.client.calendar.events.list({
-                'calendarId': 'primary',
-                'timeMin': now,
-                'showDeleted': false,
-                'singleEvents': true,
-                'maxResults': 20,
-                'orderBy': 'startTime'
-            });
-
-            const events = response.result.items || [];
-            renderCalendarEvents(events);
-        } catch (error) {
-            console.error('Error cargando eventos:', error);
-            document.getElementById('upcoming-list').innerHTML = `
-                    <li style="color: #ef4444; font-size: 0.85rem; text-align: center; padding: 20px 0;">
-                        Error al cargar eventos. Revisa la consola.
-                    </li>`;
-        }
-    }
-
-    function renderCalendarEvents(events) {
-        const upcomingList = document.getElementById('upcoming-list');
-        const nextEventCard = document.getElementById('next-event-card');
-        const nextEventTitle = document.getElementById('next-event-title');
-        const nextEventTime = document.getElementById('next-event-time');
-        const eventCount = document.getElementById('event-count');
-
-        upcomingList.innerHTML = '';
-        eventCount.textContent = events.length;
-
-        if (events.length === 0) {
-            upcomingList.innerHTML = `<li style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">No hay eventos próximos</li>`;
-            nextEventCard.style.display = 'none';
-            return;
-        }
-
-        nextEventCard.style.display = 'block';
-        const nextEv = events[0];
-        const nextStart = nextEv.start.dateTime || nextEv.start.date;
-        nextEventTitle.textContent = nextEv.summary || 'Sin título';
-
-        const dateObj = new Date(nextStart);
-        const dateStr = dateObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
-        const timeStr = nextEv.start.dateTime ? dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : 'Todo el día';
-        nextEventTime.innerHTML = `<i data-lucide="clock" style="width: 14px; height: 14px;"></i><span>${dateStr} · ${timeStr}</span>`;
-
-        events.forEach(event => {
-            const li = document.createElement('li');
-            li.className = 'event-item';
-
-            const start = event.start.dateTime || event.start.date;
-            const d = new Date(start);
-            const dStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-            const tStr = event.start.dateTime ? d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : 'Todo el día';
-
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'event-info';
-
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'event-name';
-            nameSpan.textContent = event.summary || 'Sin título';
-
-            const timeSpan = document.createElement('span');
-            timeSpan.className = 'event-time';
-            timeSpan.textContent = `${dStr} · ${tStr}`;
-
-            infoDiv.appendChild(nameSpan);
-            infoDiv.appendChild(timeSpan);
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'btn-delete';
-            deleteBtn.addEventListener('click', () => deleteCalendarEvent(event.id));
-            deleteBtn.innerHTML = `<i data-lucide="x" style="width: 16px; height: 16px;"></i>`;
-
-            li.appendChild(infoDiv);
-            li.appendChild(deleteBtn);
-            upcomingList.appendChild(li);
-        });
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
-
-    // ==========================================
-    // 3. CREAR EVENTO EN GOOGLE CALENDAR
-    // ==========================================
-    document.getElementById('event-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        if (!isAuthenticated) {
-            alert('Primero debes conectar Google Calendar con el botón de arriba a la derecha.');
-            return;
-        }
-
-        const title = document.getElementById('event-title').value;
-        const datetime = document.getElementById('event-datetime').value;
-
-        if (!title || !datetime) return;
-
-        const startDate = new Date(datetime);
-        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-
-        const event = {
-            'summary': title,
-            'start': { 'dateTime': startDate.toISOString(), 'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone },
-            'end': { 'dateTime': endDate.toISOString(), 'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone }
-        };
-
-        try {
-            await gapi.client.calendar.events.insert({
-                'calendarId': 'primary',
-                'resource': event
-            });
-            console.log('✅ Evento creado en Google Calendar');
-            document.getElementById('event-form').reset();
-            loadCalendarEvents();
-        } catch (error) {
-            console.error('Error creando evento:', error);
-            alert('Error al crear el evento. Revisa la consola.');
-        }
-    });
-
-    // ==========================================
-    // 4. ELIMINAR EVENTO DE GOOGLE CALENDAR
-    // ==========================================
-    async function deleteCalendarEvent(eventId) {
-        if (!confirm('¿Eliminar este evento del calendario?')) return;
-
-        try {
-            await gapi.client.calendar.events.delete({
-                'calendarId': 'primary',
-                'eventId': eventId
-            });
-            console.log('✅ Evento eliminado');
-            loadCalendarEvents();
-        } catch (error) {
-            console.error('Error eliminando evento:', error);
-            alert('Error al eliminar el evento.');
-        }
-    }
-
-    // ==========================================
-    // 5. NAVEGACIÓN
-    // ==========================================
-    const sidebarIcons = document.querySelectorAll('.sidebar-icon[data-view]');
-    const views = document.querySelectorAll('.view');
-
-    sidebarIcons.forEach(icon => {
-        icon.addEventListener('click', () => {
-            sidebarIcons.forEach(i => i.classList.remove('active'));
-            icon.classList.add('active');
-            const targetView = icon.getAttribute('data-view');
-            views.forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${targetView}`).classList.add('active');
-        });
-    });
-
-    // ==========================================
-    // 6. RELOJ
-    // ==========================================
+    // ==================== RELOJ ====================
     function updateClock() {
+        const clockEl = document.getElementById('clock');
+        const dateEl = document.getElementById('date');
+        if (!clockEl) return;
         const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('clock').textContent = `${hours}:${minutes}`;
-
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        let dateStr = now.toLocaleDateString('es-ES', options);
-        dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-        document.getElementById('date').textContent = dateStr;
+        clockEl.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+        if (dateEl) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            let dateStr = now.toLocaleDateString('es-ES', options);
+            dateEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        }
     }
-    setInterval(updateClock, 1000);
     updateClock();
+    setInterval(updateClock, 1000);
+    console.log('✅ Reloj iniciado');
 
-    // ==========================================
-    // 7. CLIMA REAL CON OPEN-METEO
-    // ==========================================
+    // ==================== NAVEGACIÓN ====================
+    document.querySelectorAll('.sidebar-icon[data-view]').forEach(icon => {
+        icon.addEventListener('click', () => {
+            document.querySelectorAll('.sidebar-icon').forEach(i => i.classList.remove('active'));
+            icon.classList.add('active');
+            const target = icon.getAttribute('data-view');
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const targetView = document.getElementById('view-' + target);
+            if (targetView) targetView.classList.add('active');
+            if (target === 'weather' && typeof drawWeather24hChart === 'function') drawWeather24hChart();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    });
+    console.log('✅ Navegación lista');
+
+    // ==================== LUCIDE (iconos) ====================
+    function refreshIcons() {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+            try { lucide.createIcons(); } catch(e) { console.warn('Error lucide', e); }
+        }
+    }
+    refreshIcons();
+
+    // ==================== CHART.JS ====================
+    function initCharts() {
+        if (typeof Chart === 'undefined') {
+            console.warn('Chart.js no está cargado');
+            return;
+        }
+        const ctxDash = document.getElementById('weatherChart');
+        if (ctxDash && !weatherChart) {
+            const grad = ctxDash.getContext('2d').createLinearGradient(0, 0, 0, 150);
+            grad.addColorStop(0, 'rgba(245, 158, 11, 0.2)');
+            grad.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+            weatherChart = new Chart(ctxDash, {
+                type: 'line',
+                data: { labels: [], datasets: [{ data: [], borderColor: '#f59e0b', backgroundColor: grad, borderWidth: 2, pointBackgroundColor: '#fff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }, y: { display: false } } }
+            });
+        }
+        const ctx24 = document.getElementById('weatherChart24');
+        if (ctx24 && !weatherChart24) {
+            const grad = ctx24.getContext('2d').createLinearGradient(0, 0, 0, 200);
+            grad.addColorStop(0, 'rgba(10, 88, 202, 0.25)');
+            grad.addColorStop(1, 'rgba(10, 88, 202, 0.0)');
+            weatherChart24 = new Chart(ctx24, {
+                type: 'line',
+                data: { labels: [], datasets: [{ data: [], borderColor: '#0a58ca', backgroundColor: grad, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#0a58ca', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }, y: { grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => v + '°' } } } }
+            });
+        }
+    }
+    initCharts();
+    console.log('✅ Charts listos');
+
+    // ==================== CLIMA ====================
     const WMO_CODES = {
         0: { desc: 'Despejado', icon: 'sun' }, 1: { desc: 'Mayormente despejado', icon: 'sun' },
         2: { desc: 'Parcialmente nublado', icon: 'cloud-sun' }, 3: { desc: 'Nublado', icon: 'cloud' },
@@ -486,48 +474,42 @@
         55: { desc: 'Llovizna densa', icon: 'cloud-drizzle' }, 61: { desc: 'Lluvia ligera', icon: 'cloud-rain' },
         63: { desc: 'Lluvia moderada', icon: 'cloud-rain' }, 65: { desc: 'Lluvia fuerte', icon: 'cloud-rain' },
         71: { desc: 'Nieve ligera', icon: 'cloud-snow' }, 73: { desc: 'Nieve moderada', icon: 'cloud-snow' },
-        75: { desc: 'Nieve fuerte', icon: 'cloud-snow' }, 80: { desc: 'Chubascos ligeros', icon: 'cloud-rain' },
-        81: { desc: 'Chubascos moderados', icon: 'cloud-rain' }, 82: { desc: 'Chubascos violentos', icon: 'cloud-rain' },
+        75: { desc: 'Nieve fuerte', icon: 'cloud-snow' }, 80: { desc: 'Chubascos', icon: 'cloud-rain' },
+        81: { desc: 'Chubascos', icon: 'cloud-rain' }, 82: { desc: 'Chubascos', icon: 'cloud-rain' },
         95: { desc: 'Tormenta', icon: 'cloud-lightning' }, 96: { desc: 'Tormenta con granizo', icon: 'cloud-lightning' },
-        99: { desc: 'Tormenta con granizo fuerte', icon: 'cloud-lightning' }
+        99: { desc: 'Tormenta', icon: 'cloud-lightning' }
     };
-
-    const ctx = document.getElementById('weatherChart').getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 150);
-    gradient.addColorStop(0, 'rgba(245, 158, 11, 0.2)');
-    gradient.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
-
-    const weatherChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels: [], datasets: [{ label: 'Temperatura', data: [], borderColor: '#f59e0b', backgroundColor: gradient, borderWidth: 2, pointBackgroundColor: '#ffffff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: true, tension: 0.4 }] },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
-            scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }, y: { display: false } },
-            elements: { line: { borderJoinStyle: 'round' } }
-        }
-    });
 
     async function loadWeatherData() {
         try {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`;
-
+            const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + settings.latitude + '&longitude=' + settings.longitude + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum&timezone=auto&forecast_days=7';
             const response = await fetch(url);
-            const data = await response.json();
+            weatherCache = await response.json();
+            renderWeather();
+            console.log('✅ Clima cargado');
+        } catch (error) {
+            console.error('❌ Error clima:', error);
+            const el = document.getElementById('weather-desc');
+            if (el) el.textContent = 'Error';
+        }
+    }
 
-            const current = data.current;
-            const hourly = data.hourly;
-            const daily = data.daily;
+    function renderWeather() {
+        if (!weatherCache) return;
+        const { current, hourly, daily } = weatherCache;
+        const wmo = WMO_CODES[current.weather_code] || { desc: 'Desconocido', icon: 'cloud' };
 
-            const wmo = WMO_CODES[current.weather_code] || { desc: 'Desconocido', icon: 'cloud' };
-            document.getElementById('current-temp').textContent = `${Math.round(current.temperature_2m)}°`;
-            document.getElementById('weather-desc').textContent = wmo.desc;
-            document.getElementById('weather-humidity').textContent = current.relative_humidity_2m;
-            document.getElementById('weather-wind').textContent = Math.round(current.wind_speed_10m);
-            document.getElementById('weather-location').textContent = `${CITY_NAME} · Máx ${Math.round(daily.temperature_2m_max[0])}° · Min ${Math.round(daily.temperature_2m_min[0])}°`;
+        const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+        const setHTML = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
 
-            document.getElementById('weather-icon-container').innerHTML = `<i data-lucide="${wmo.icon}" style="width: 40px; height: 40px;"></i>`;
+        setText('current-temp', Math.round(current.temperature_2m) + '°');
+        setText('weather-desc', wmo.desc);
+        setText('weather-humidity', current.relative_humidity_2m);
+        setText('weather-wind', Math.round(current.wind_speed_10m));
+        setText('weather-location', settings.cityName + ' · Máx ' + Math.round(daily.temperature_2m_max[0]) + '° · Min ' + Math.round(daily.temperature_2m_min[0]) + '°');
+        setHTML('weather-icon-container', '<i data-lucide="' + wmo.icon + '" style="width: 40px; height: 40px;"></i>');
 
+        if (weatherChart) {
             const nowIndex = new Date().getHours();
             const labels = [], temps = [];
             for (let i = nowIndex; i < nowIndex + 12; i++) {
@@ -537,39 +519,199 @@
             weatherChart.data.labels = labels;
             weatherChart.data.datasets[0].data = temps;
             weatherChart.update();
+        }
 
-            const forecastContainer = document.getElementById('daily-forecast');
-            forecastContainer.innerHTML = '';
+        const fc = document.getElementById('daily-forecast');
+        if (fc) {
+            fc.innerHTML = '';
             for (let i = 0; i < Math.min(7, daily.time.length); i++) {
                 const dayDate = new Date(daily.time[i]);
                 const dayName = dayDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
                 const dayWmo = WMO_CODES[daily.weather_code[i]] || { icon: 'cloud' };
-
                 const div = document.createElement('div');
                 div.className = 'forecast-day';
-                div.innerHTML = `
-                        <span class="day-name">${dayName}</span>
-                        <i data-lucide="${dayWmo.icon}" class="day-icon" style="width: 16px; height: 16px;"></i>
-                        <div class="day-temps">
-                            <span class="max-temp">${Math.round(daily.temperature_2m_max[i])}°</span>
-                            <span class="min-temp">${Math.round(daily.temperature_2m_min[i])}°</span>
-                        </div>`;
-                forecastContainer.appendChild(div);
+                div.innerHTML = '<span class="day-name">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon" style="width: 16px; height: 16px;"></i><div class="day-temps"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div>';
+                fc.appendChild(div);
             }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-
-        } catch (error) {
-            console.error('Error cargando el clima:', error);
-            document.getElementById('weather-desc').textContent = 'Error al cargar';
-            document.getElementById('weather-location').textContent = 'Sin conexión';
         }
+
+        setHTML('vw-icon', '<i data-lucide="' + wmo.icon + '" style="width: 70px; height: 70px;"></i>');
+        setText('vw-temp', Math.round(current.temperature_2m) + '°');
+        setText('vw-desc', wmo.desc);
+        setText('vw-city', settings.cityName);
+        setText('vw-feels', Math.round(current.apparent_temperature) + '°');
+        setText('vw-hum', current.relative_humidity_2m + '%');
+        setText('vw-wind', Math.round(current.wind_speed_10m) + ' km/h');
+
+        if (daily.sunrise && daily.sunrise[0]) setText('vw-sunrise', daily.sunrise[0].split('T')[1]);
+        if (daily.sunset && daily.sunset[0]) setText('vw-sunset', daily.sunset[0].split('T')[1]);
+        setText('vw-uv', daily.uv_index_max ? daily.uv_index_max[0] : '--');
+        setText('vw-rain', (daily.precipitation_sum ? daily.precipitation_sum[0] : '--') + ' mm');
+
+        const grid = document.getElementById('vw-week-grid');
+        if (grid) {
+            grid.innerHTML = '';
+            for (let i = 0; i < Math.min(7, daily.time.length); i++) {
+                const dayDate = new Date(daily.time[i]);
+                const dayName = dayDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
+                const dayWmo = WMO_CODES[daily.weather_code[i]] || { icon: 'cloud' };
+                const div = document.createElement('div');
+                div.className = 'forecast-week-item';
+                div.innerHTML = '<span class="day-full">' + dayName + '</span><i data-lucide="' + dayWmo.icon + '" class="day-icon-big" style="width: 28px; height: 28px;"></i><div class="temps-range"><span class="max-temp">' + Math.round(daily.temperature_2m_max[i]) + '°</span><span class="min-temp">' + Math.round(daily.temperature_2m_min[i]) + '°</span></div><span class="precip">💧 ' + (daily.precipitation_sum ? daily.precipitation_sum[i] : 0) + ' mm</span>';
+                grid.appendChild(div);
+            }
+        }
+        refreshIcons();
+    }
+
+    function drawWeather24hChart() {
+        if (!weatherCache || !weatherChart24) return;
+        const { hourly } = weatherCache;
+        const nowIndex = new Date().getHours();
+        const labels = [], temps = [];
+        for (let i = nowIndex; i < nowIndex + 24; i++) {
+            labels.push(String(i % 24).padStart(2, '0') + ':00');
+            temps.push(hourly.temperature_2m[i]);
+        }
+        weatherChart24.data.labels = labels;
+        weatherChart24.data.datasets[0].data = temps;
+        weatherChart24.update();
     }
 
     loadWeatherData();
 
-    // ==========================================
-    // 8. MODO NOCTURNO
-    // ==========================================
+    // ==================== TAREAS ====================
+    function renderTasks() {
+        const tasksList = document.getElementById('tasks-list');
+        const tasksCount = document.getElementById('tasks-count');
+        const dashTaskList = document.getElementById('dash-task-list');
+        const dashTaskCount = document.getElementById('dash-task-count');
+        if (!tasksList) return;
+
+        const pending = tasks.filter(t => !t.done);
+        tasksCount.textContent = tasks.length;
+        tasksList.innerHTML = '';
+
+        if (tasks.length === 0) {
+            tasksList.innerHTML = '<li class="empty-state">No hay tareas. Añade una abajo 👇</li>';
+        } else {
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item' + (task.done ? ' done' : '');
+
+                const check = document.createElement('div');
+                check.className = 'task-check' + (task.done ? ' checked' : '');
+                check.innerHTML = task.done ? '<i data-lucide="check" style="width: 14px; height: 14px;"></i>' : '';
+                check.addEventListener('click', () => toggleTask(task.id));
+
+                const body = document.createElement('div');
+                body.className = 'task-body';
+                const name = document.createElement('span');
+                name.className = 'task-name';
+                name.textContent = task.name;
+                const meta = document.createElement('span');
+                meta.className = 'task-meta';
+                meta.textContent = new Date(task.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                body.appendChild(name); body.appendChild(meta);
+
+                const priority = document.createElement('span');
+                priority.className = 'priority-badge priority-' + task.priority;
+                priority.textContent = task.priority === 'high' ? 'Alta' : task.priority === 'med' ? 'Media' : 'Baja';
+
+                const del = document.createElement('button');
+                del.className = 'btn-delete';
+                del.innerHTML = '<i data-lucide="x" style="width: 16px; height: 16px;"></i>';
+                del.addEventListener('click', () => deleteTask(task.id));
+
+                li.appendChild(check); li.appendChild(body); li.appendChild(priority); li.appendChild(del);
+                tasksList.appendChild(li);
+            });
+        }
+
+        if (dashTaskCount) dashTaskCount.textContent = pending.length;
+        if (dashTaskList) {
+            dashTaskList.innerHTML = '';
+            if (pending.length === 0) {
+                dashTaskList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">Sin tareas pendientes</li>';
+            } else {
+                pending.slice(0, 5).forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'event-item';
+                    const info = document.createElement('div');
+                    info.className = 'event-info';
+                    const nm = document.createElement('span');
+                    nm.className = 'event-name';
+                    nm.textContent = task.name;
+                    info.appendChild(nm);
+                    const badge = document.createElement('span');
+                    badge.className = 'priority-badge priority-' + task.priority;
+                    badge.textContent = task.priority === 'high' ? 'Alta' : task.priority === 'med' ? 'Media' : 'Baja';
+                    li.appendChild(info); li.appendChild(badge);
+                    dashTaskList.appendChild(li);
+                });
+            }
+        }
+        refreshIcons();
+    }
+
+    document.getElementById('add-task-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('task-input');
+        const priority = document.getElementById('task-priority').value;
+        if (!input.value.trim()) return;
+        tasks.push({ id: Date.now(), name: input.value.trim(), priority, done: false, createdAt: new Date().toISOString() });
+        localStorage.setItem('dashboardTasks', JSON.stringify(tasks));
+        input.value = '';
+        renderTasks();
+    });
+
+    function toggleTask(id) {
+        const t = tasks.find(x => x.id === id);
+        if (t) { t.done = !t.done; localStorage.setItem('dashboardTasks', JSON.stringify(tasks)); renderTasks(); }
+    }
+    function deleteTask(id) {
+        tasks = tasks.filter(x => x.id !== id);
+        localStorage.setItem('dashboardTasks', JSON.stringify(tasks));
+        renderTasks();
+    }
+    renderTasks();
+    console.log('✅ Tareas listas');
+
+    // ==================== AJUSTES ====================
+    const settingCity = document.getElementById('settings-current-city');
+    if (settingCity) settingCity.textContent = settings.cityName;
+
+    document.getElementById('city-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const city = document.getElementById('city-input').value.trim();
+        if (!city) return;
+        try {
+            const res = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=es');
+            const data = await res.json();
+            if (!data.results || data.results.length === 0) { alert('Ciudad no encontrada'); return; }
+            const r = data.results[0];
+            settings.latitude = r.latitude;
+            settings.longitude = r.longitude;
+            settings.cityName = r.name;
+            localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+            document.getElementById('settings-current-city').textContent = r.name;
+            document.getElementById('city-input').value = '';
+            await loadWeatherData();
+            drawWeather24hChart();
+            alert('Ciudad cambiada a: ' + r.name);
+        } catch (err) { alert('Error al buscar la ciudad'); }
+    });
+
+    document.getElementById('settings-theme-btn').addEventListener('click', () => document.getElementById('theme-toggle').click());
+    document.getElementById('settings-google-btn').addEventListener('click', () => handleAuthClick());
+    document.getElementById('settings-clear-btn').addEventListener('click', () => {
+        if (!confirm('¿Borrar todos los datos?')) return;
+        localStorage.removeItem('dashboardTasks');
+        localStorage.removeItem('dashboardSettings');
+        location.reload();
+    });
+
+    // ==================== MODO NOCTURNO ====================
     const themeToggle = document.getElementById('theme-toggle');
     let isDark = localStorage.getItem('dashboardTheme') === 'dark';
 
@@ -581,7 +723,7 @@
             document.documentElement.style.setProperty('--text-main', '#e2e8f0');
             document.documentElement.style.setProperty('--text-muted', '#94a3b8');
             document.documentElement.style.setProperty('--accent-light-blue', '#1e3a5f');
-            themeToggle.innerHTML = `<i data-lucide="sun" style="width: 24px; height: 24px;"></i>`;
+            themeToggle.innerHTML = '<i data-lucide="sun" style="width: 24px; height: 24px;"></i>';
         } else {
             document.documentElement.style.setProperty('--bg-body', '#e8e6e1');
             document.documentElement.style.setProperty('--bg-screen', '#f4f6f9');
@@ -589,41 +731,164 @@
             document.documentElement.style.setProperty('--text-main', '#1e293b');
             document.documentElement.style.setProperty('--text-muted', '#64748b');
             document.documentElement.style.setProperty('--accent-light-blue', '#e0e7ff');
-            themeToggle.innerHTML = `<i data-lucide="moon" style="width: 24px; height: 24px;"></i>`;
+            themeToggle.innerHTML = '<i data-lucide="moon" style="width: 24px; height: 24px;"></i>';
         }
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+        refreshIcons();
     }
-
     themeToggle.addEventListener('click', () => {
         isDark = !isDark;
         localStorage.setItem('dashboardTheme', isDark ? 'dark' : 'light');
         applyTheme();
     });
-
     applyTheme();
 
-    // ==========================================
-    // 9. RUTINAS
-    // ==========================================
-    const routineList = document.getElementById('routine-list');
-    const routineCount = document.getElementById('routine-count');
-    const routines = JSON.parse(localStorage.getItem('dashboardRoutines')) || [];
-
-    if (routines.length > 0) {
-        routineList.innerHTML = '';
-        routineCount.textContent = routines.length;
-        routines.forEach(r => {
-            const li = document.createElement('li');
-            li.className = 'routine-item';
-            li.innerHTML = `
-                    <div class="routine-info">
-                        <span class="routine-name">${r.name}</span>
-                        <span class="routine-time">${r.time}</span>
-                    </div>`;
-            routineList.appendChild(li);
-        });
+    // ==================== GOOGLE CALENDAR ====================
+    function updateGoogleStatus() {
+        const dot = document.getElementById('google-status-dot');
+        const txt = document.getElementById('google-status-text');
+        if (!dot || !txt) return;
+        if (isAuthenticated) { dot.className = 'status-dot on'; txt.textContent = 'Conectado'; }
+        else { dot.className = 'status-dot off'; txt.textContent = 'No conectado'; }
     }
 
+    function gapiLoad() { gapi.load('client', gapiInit); }
+    function gapiInit() {
+        gapi.client.init({ discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'] })
+            .then(() => { gapiInited = true; checkAuthReady(); })
+            .catch(e => console.error('gapi init error:', e));
+    }
+    function gisInit() {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID, scope: SCOPES,
+            callback: (resp) => {
+                if (resp.error) { console.error(resp); return; }
+                isAuthenticated = true;
+                document.getElementById('google-auth-btn').classList.remove('visible');
+                updateGoogleStatus();
+                loadCalendarEvents();
+            },
+        });
+        gisInited = true;
+        checkAuthReady();
+    }
+    function waitForGoogle() {
+        if (typeof gapi !== 'undefined' && typeof google !== 'undefined' && google.accounts) {
+            gapiLoad(); gisInit();
+        } else setTimeout(waitForGoogle, 100);
+    }
+    waitForGoogle();
+
+    function checkAuthReady() {
+        if (gapiInited && gisInited) {
+            document.getElementById('google-auth-btn').classList.add('visible');
+            refreshIcons();
+            console.log('✅ Google API lista');
+        }
+    }
+    function handleAuthClick() {
+        if (!gapiInited || !gisInited) return;
+        tokenClient.requestAccessToken({ prompt: gapi.client.getToken() === null ? 'consent' : '' });
+    }
+    window.handleAuthClick = handleAuthClick;
+
+    async function loadCalendarEvents() {
+        try {
+            const response = await gapi.client.calendar.events.list({
+                'calendarId': 'primary', 'timeMin': new Date().toISOString(),
+                'showDeleted': false, 'singleEvents': true, 'maxResults': 20, 'orderBy': 'startTime'
+            });
+            events = response.result.items || [];
+            renderCalendarEvents(events);
+            console.log('✅ Eventos cargados:', events.length);
+        } catch (error) {
+            console.error('Error eventos:', error);
+        }
+    }
+
+    function renderCalendarEvents(events) {
+        const upcomingList = document.getElementById('upcoming-list');
+        const nextEventCard = document.getElementById('next-event-card');
+        const nextEventTitle = document.getElementById('next-event-title');
+        const nextEventTime = document.getElementById('next-event-time');
+        document.getElementById('event-count').textContent = events.length;
+        upcomingList.innerHTML = '';
+
+        if (events.length === 0) {
+            upcomingList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">No hay eventos próximos</li>';
+            nextEventCard.style.display = 'none';
+            return;
+        }
+
+        nextEventCard.style.display = 'block';
+        const nextEv = events[0];
+        const nextStart = nextEv.start.dateTime || nextEv.start.date;
+        nextEventTitle.textContent = nextEv.summary || 'Sin título';
+        const dateObj = new Date(nextStart);
+        const dateStr = dateObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+        const timeStr = nextEv.start.dateTime ? dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : 'Todo el día';
+        nextEventTime.innerHTML = '<i data-lucide="clock" style="width: 14px; height: 14px;"></i><span>' + dateStr + ' · ' + timeStr + '</span>';
+
+        events.forEach(event => {
+            const li = document.createElement('li');
+            li.className = 'event-item';
+            const start = event.start.dateTime || event.start.date;
+            const d = new Date(start);
+            const dStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            const tStr = event.start.dateTime ? d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : 'Todo el día';
+
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'event-info';
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'event-name';
+            nameSpan.textContent = event.summary || 'Sin título';
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'event-time';
+            timeSpan.textContent = dStr + ' · ' + tStr;
+            infoDiv.appendChild(nameSpan); infoDiv.appendChild(timeSpan);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-delete';
+            deleteBtn.addEventListener('click', () => deleteCalendarEvent(event.id));
+            deleteBtn.innerHTML = '<i data-lucide="x" style="width: 16px; height: 16px;"></i>';
+
+            li.appendChild(infoDiv); li.appendChild(deleteBtn);
+            upcomingList.appendChild(li);
+        });
+        refreshIcons();
+    }
+
+    document.getElementById('event-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!isAuthenticated) { alert('Conecta primero Google Calendar'); return; }
+        const title = document.getElementById('event-title').value;
+        const datetime = document.getElementById('event-datetime').value;
+        if (!title || !datetime) return;
+        const startDate = new Date(datetime);
+        const endDate = new Date(startDate.getTime() + 3600000);
+        try {
+            await gapi.client.calendar.events.insert({
+                'calendarId': 'primary',
+                'resource': {
+                    'summary': title,
+                    'start': { 'dateTime': startDate.toISOString(), 'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone },
+                    'end': { 'dateTime': endDate.toISOString(), 'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone }
+                }
+            });
+            document.getElementById('event-form').reset();
+            loadCalendarEvents();
+        } catch (err) { alert('Error al crear el evento'); }
+    });
+
+    async function deleteCalendarEvent(eventId) {
+        if (!confirm('¿Eliminar este evento?')) return;
+        try {
+            await gapi.client.calendar.events.delete({ 'calendarId': 'primary', 'eventId': eventId });
+            loadCalendarEvents();
+        } catch (error) { alert('Error al eliminar'); }
+    }
+
+    updateGoogleStatus();
+    console.log('✅ Todo inicializado');
 </script>
 </body>
 </html>
