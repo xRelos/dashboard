@@ -202,7 +202,7 @@
                 </div>
                 <div class="card events-card">
                     <div class="section-header">
-                        <div class="section-title"><i data-lucide="list" style="width: 18px; height: 18px;"></i><span>Próximos eventos</span></div>
+                        <div class="section-title"><i data-lucide="list" style="width: 18px; height: 18px;"></i><span>Próximos 14 días</span></div>
                         <span class="badge-count" id="event-count">0</span>
                     </div>
                     <ul class="event-list" id="upcoming-list">
@@ -375,7 +375,6 @@
     const CLIENT_ID = '493262542322-u7esgck1r0n6o4hbth0uirqsup7mn0o4.apps.googleusercontent.com';
     const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
 
-    // ✅ Validación de settings con fallback
     const DEFAULT_SETTINGS = { latitude: 37.9922, longitude: -1.1307, cityName: 'Murcia' };
     let settings = safeJSON('dashboardSettings', DEFAULT_SETTINGS);
     if (!settings || typeof settings.latitude !== 'number' || typeof settings.longitude !== 'number' || !settings.cityName) {
@@ -813,15 +812,33 @@
     }
     window.handleAuthClick = handleAuthClick;
 
+    // ✅ NUEVO: carga eventos desde ahora hasta 14 días vista
     async function loadCalendarEvents() {
         try {
+            const now = new Date();
+            const twoWeeksLater = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+
             const response = await gapi.client.calendar.events.list({
-                'calendarId': 'primary', 'timeMin': new Date().toISOString(),
-                'showDeleted': false, 'singleEvents': true, 'maxResults': 20, 'orderBy': 'startTime'
+                'calendarId': 'primary',
+                'timeMin': now.toISOString(),
+                'timeMax': twoWeeksLater.toISOString(),
+                'showDeleted': false,
+                'singleEvents': true,
+                'maxResults': 100,
+                'orderBy': 'startTime'
             });
-            events = response.result.items || [];
+
+            const items = response.result.items || [];
+
+            // Filtro extra: descartar cualquier evento cuyo fin ya haya pasado
+            events = items.filter(ev => {
+                const endStr = ev.end.dateTime || ev.end.date;
+                if (!endStr) return false;
+                return new Date(endStr) > now;
+            });
+
             renderCalendarEvents(events);
-            console.log('✅ Eventos cargados:', events.length);
+            console.log('✅ Eventos futuros (14 días):', events.length, 'de', items.length, 'recibidos');
         } catch (error) {
             console.error('Error eventos:', error);
         }
@@ -836,7 +853,7 @@
         upcomingList.innerHTML = '';
 
         if (events.length === 0) {
-            upcomingList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">No hay eventos próximos</li>';
+            upcomingList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">No hay eventos en los próximos 14 días</li>';
             nextEventCard.style.display = 'none';
             return;
         }
