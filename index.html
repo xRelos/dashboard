@@ -224,154 +224,61 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 10px; }
 
-        /* ============================================================
-           RESPONSIVE: TABLETS PEQUEÑAS Y MÓVILES (hasta 1024px)
-           Cualquier tablet (iPad, Galaxy Tab, etc.) usa este layout
-           ============================================================ */
         @media (max-width: 1024px) {
             body { overflow: auto; }
-            .screen {
-                flex-direction: column;
-                padding: 0;
-                gap: 0;
-                height: 100vh;
-                width: 100vw;
-            }
+            .screen { flex-direction: column; padding: 0; gap: 0; height: 100vh; width: 100vw; }
             .sidebar {
-                width: 100%;
-                height: 60px;
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 0 4px;
-                gap: 0;
-                border-top: 1px solid var(--border-light);
-                border-radius: 0;
-                order: 2;
-                flex-shrink: 0;
-                background: var(--card-bg);
+                width: 100%; height: 60px; flex-direction: row;
+                justify-content: space-around; padding: 0 4px; gap: 0;
+                border-top: 1px solid var(--border-light); border-radius: 0;
+                order: 2; flex-shrink: 0; background: var(--card-bg);
                 padding-bottom: env(safe-area-inset-bottom, 0);
             }
-            .sidebar-icon {
-                width: 44px;
-                height: 44px;
-                border-radius: 50%;
-            }
+            .sidebar-icon { width: 44px; height: 44px; border-radius: 50%; }
             .sidebar-icon svg { width: 22px; height: 22px; }
             .sidebar-icon[style*="margin-top"] { margin-top: 0 !important; }
-
             .main-content {
-                flex-direction: column;
-                order: 1;
-                padding: 12px;
-                gap: 12px;
-                overflow-y: auto;
-                overflow-x: hidden;
-                flex: 1;
-                min-height: 0;
+                flex-direction: column; order: 1; padding: 12px; gap: 12px;
+                overflow-y: auto; overflow-x: hidden; flex: 1; min-height: 0;
                 -webkit-overflow-scrolling: touch;
             }
-
             .view { height: auto; min-height: 0; }
             .view.active { flex-direction: column !important; gap: 12px; }
-
-            .col-left, .col-right {
-                flex: none;
-                min-width: 0;
-                width: 100%;
-                gap: 12px;
-            }
-
+            .col-left, .col-right { flex: none; min-width: 0; width: 100%; gap: 12px; }
             .card { padding: 16px; border-radius: 14px; }
-
             .clock-card { padding: 20px 16px; }
             .clock-time { font-size: 3.2rem; letter-spacing: -1px; }
             .clock-date { font-size: 0.9rem; }
-
             .next-event-card { padding: 16px; }
             .next-event-title { font-size: 1.15rem; }
             .next-event-time { font-size: 0.8rem; }
-
             .section-title { font-size: 0.9rem; }
             .event-name { font-size: 0.85rem; }
             .event-time { font-size: 0.7rem; }
-
             .weather-temp { font-size: 2.2rem; }
             .weather-desc { font-size: 0.85rem; }
             .weather-location { font-size: 0.7rem; }
-
-            /* Pronóstico del dashboard: scroll horizontal */
-            .daily-forecast {
-                overflow-x: auto;
-                justify-content: flex-start;
-                gap: 14px;
-                padding-bottom: 6px;
-                -webkit-overflow-scrolling: touch;
-            }
+            .daily-forecast { overflow-x: auto; justify-content: flex-start; gap: 14px; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
             .forecast-day { flex: 0 0 auto; min-width: 44px; }
-
-            .bottom-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                flex: none;
-            }
-
+            .bottom-grid { grid-template-columns: 1fr; gap: 12px; flex: none; }
             .add-event-form input { font-size: 0.85rem; padding: 10px 12px; }
             .add-event-form button { padding: 0 14px; }
-
-            /* Vista clima detallada */
-            #view-weather.active {
-                display: flex !important;
-                flex-direction: column !important;
-                overflow: visible;
-                gap: 12px;
-            }
-            #view-weather .weather-current-card {
-                grid-column: auto;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-                padding: 20px;
-            }
+            #view-weather.active { display: flex !important; flex-direction: column !important; overflow: visible; gap: 12px; }
+            #view-weather .weather-current-card { grid-column: auto; flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
             #view-weather .current-main { gap: 15px; }
             #view-weather .current-main .icon-big svg { width: 50px !important; height: 50px !important; }
             #view-weather .current-main .temp-big { font-size: 2.8rem; }
             #view-weather .current-main .desc-big { font-size: 0.85rem; }
-            #view-weather .current-stats {
-                width: 100%;
-                gap: 8px;
-            }
+            #view-weather .current-stats { width: 100%; gap: 8px; }
             #view-weather .current-stats .stat-box { padding: 10px 8px; }
             #view-weather .current-stats .stat-label { font-size: 0.6rem; }
             #view-weather .current-stats .stat-value { font-size: 0.95rem; }
-
-            #view-weather .chart-24h,
-            #view-weather .sun-card,
-            #view-weather .forecast-week {
-                grid-column: auto;
-            }
-
-            /* Pronóstico semanal: scroll horizontal */
-            #view-weather .forecast-week-grid {
-                display: flex;
-                overflow-x: auto;
-                gap: 8px;
-                padding-bottom: 6px;
-                margin-top: 10px;
-                -webkit-overflow-scrolling: touch;
-            }
-            #view-weather .forecast-week-item {
-                flex: 0 0 auto;
-                min-width: 74px;
-                padding: 10px 8px;
-            }
+            #view-weather .chart-24h, #view-weather .sun-card, #view-weather .forecast-week { grid-column: auto; }
+            #view-weather .forecast-week-grid { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; margin-top: 10px; -webkit-overflow-scrolling: touch; }
+            #view-weather .forecast-week-item { flex: 0 0 auto; min-width: 74px; padding: 10px 8px; }
             #view-weather .forecast-week-item .day-full { font-size: 0.7rem; }
-
-            /* Calendario */
             #view-calendar.active { flex-direction: column !important; gap: 12px; }
-            #view-calendar .calendar-main {
-                flex: none;
-                min-height: 380px;
-            }
+            #view-calendar .calendar-main { flex: none; min-height: 380px; }
             #view-calendar .calendar-detail-card { flex: none; }
             #view-calendar .calendar-month-title { font-size: 1.15rem; }
             #view-calendar .cal-nav-btn { width: 32px; height: 32px; }
@@ -381,54 +288,27 @@
             #view-calendar .cal-day-num { font-size: 0.7rem; width: 20px; height: 20px; }
             #view-calendar .cal-event-chip { font-size: 0.55rem; padding: 1px 4px; }
             #view-calendar .cal-more { font-size: 0.55rem; }
-
-            /* Tareas */
             #view-tasks.active { flex-direction: column !important; }
             #view-tasks .add-task-bar { flex-wrap: wrap; }
             #view-tasks .add-task-bar input[type="text"] { flex: 1 1 100%; }
             #view-tasks .add-task-bar select { flex: 1; }
             #view-tasks .add-task-bar button { flex: 0 0 auto; }
-
-            /* Ajustes */
             #view-settings.active { padding: 0; }
             #view-settings .settings-grid { grid-template-columns: 1fr; gap: 12px; }
             #view-settings .setting-row { flex-wrap: wrap; }
-
-            /* Botón Google más compacto */
-            #google-auth-btn {
-                top: 8px;
-                right: 8px;
-                padding: 8px 12px;
-                font-size: 0.75rem;
-                border-radius: 8px;
-            }
+            #google-auth-btn { top: 8px; right: 8px; padding: 8px 12px; font-size: 0.75rem; border-radius: 8px; }
             #google-auth-btn svg { width: 14px !important; height: 14px !important; }
 
-            /* En apaisado con poca altura, sidebar izquierda de nuevo para no tapar contenido */
             @media (orientation: landscape) and (max-height: 700px) {
                 .screen { flex-direction: row; padding: 8px; gap: 8px; }
                 .sidebar {
-                    width: 54px;
-                    height: auto;
-                    flex-direction: column;
-                    justify-content: flex-start;
-                    gap: 16px;
-                    padding: 10px 0;
-                    border-top: none;
-                    border-radius: 12px;
-                    order: 0;
-                    background: var(--card-bg);
-                    box-shadow: var(--shadow-sm);
+                    width: 54px; height: auto; flex-direction: column;
+                    justify-content: flex-start; gap: 16px; padding: 10px 0;
+                    border-top: none; border-radius: 12px; order: 0;
+                    background: var(--card-bg); box-shadow: var(--shadow-sm);
                 }
                 .sidebar-icon[style*="margin-top"] { margin-top: auto !important; }
-                .main-content {
-                    order: 0;
-                    padding: 6px;
-                    gap: 10px;
-                    flex-direction: row;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                }
+                .main-content { order: 0; padding: 6px; gap: 10px; flex-direction: row; overflow-y: auto; overflow-x: hidden; }
                 .view.active { flex-direction: row !important; }
                 .col-left { flex: 1; min-width: 240px; }
                 .col-right { flex: 1.4; min-width: 280px; }
@@ -436,12 +316,7 @@
                 #view-calendar.active { flex-direction: row !important; }
                 #view-calendar .calendar-main { min-height: 0; max-height: none; }
                 #view-tasks.active { flex-direction: row !important; }
-                #view-weather.active {
-                    display: grid !important;
-                    grid-template-columns: 1.5fr 1fr;
-                    grid-template-rows: auto auto auto;
-                    overflow-y: auto;
-                }
+                #view-weather.active { display: grid !important; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto auto; overflow-y: auto; }
                 #view-weather .weather-current-card { grid-column: 1 / 3; flex-direction: row; align-items: center; padding: 20px; }
                 #view-weather .chart-24h { grid-column: 1 / 2; }
                 #view-weather .sun-card { grid-column: 2 / 3; }
@@ -689,6 +564,17 @@
 </div>
 
 <script>
+    // ============================================================
+    // 0. LIMPIAR HASH DE URL al volver de la redirección de Google
+    // ============================================================
+    if (window.location.hash && window.location.hash.indexOf('access_token') !== -1) {
+        setTimeout(function() {
+            try {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch(e) {}
+        }, 500);
+    }
+
     console.log('🚀 Script iniciado');
 
     // ============================================================
@@ -696,20 +582,16 @@
     // ============================================================
     var lucideReady = false;
     var lucideAttempts = 0;
-    var LUCIDE_MAX_ATTEMPTS = 100; // 10 segundos máximo
+    var LUCIDE_MAX_ATTEMPTS = 100;
 
     function tryLoadLucide() {
         if (typeof lucide !== 'undefined' && lucide.createIcons) {
             lucideReady = true;
-            try { lucide.createIcons(); } catch(e) { console.warn('Error lucide:', e); }
-            console.log('✅ Lucide listo (intento ' + lucideAttempts + ')');
+            try { lucide.createIcons(); } catch(e) {}
             return;
         }
         lucideAttempts++;
-        if (lucideAttempts > LUCIDE_MAX_ATTEMPTS) {
-            console.error('❌ Lucide no cargó tras ' + LUCIDE_MAX_ATTEMPTS + ' intentos');
-            return;
-        }
+        if (lucideAttempts > LUCIDE_MAX_ATTEMPTS) return;
         setTimeout(tryLoadLucide, 100);
     }
     tryLoadLucide();
@@ -721,13 +603,17 @@
 
     function safeJSON(key, fallback) {
         try {
-            const val = localStorage.getItem(key);
+            var val = localStorage.getItem(key);
             return val ? JSON.parse(val) : fallback;
         } catch (e) { return fallback; }
     }
 
     const CLIENT_ID = '493262542322-u7esgck1r0n6o4hbth0uirqsup7mn0o4.apps.googleusercontent.com';
     const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
+
+    // ✅ redirect_uri dinámico: funciona en GitHub Pages y en localhost
+    var REDIRECT_URI = window.location.origin + window.location.pathname;
+    console.log('📍 Redirect URI:', REDIRECT_URI);
 
     const DEFAULT_SETTINGS = { latitude: 37.9922, longitude: -1.1307, cityName: 'Murcia' };
     let settings = safeJSON('dashboardSettings', DEFAULT_SETTINGS);
@@ -1241,9 +1127,16 @@
             .then(() => { gapiInited = true; checkAuthReady(); })
             .catch(e => console.error('gapi init error:', e));
     }
+
+    // ============================================================
+    // ✅ GIS init con ux_mode: 'redirect' para modo kiosko
+    // ============================================================
     function gisInit() {
         tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID, scope: SCOPES,
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            ux_mode: 'redirect',
+            redirect_uri: REDIRECT_URI,
             callback: (resp) => {
                 if (resp.error) {
                     document.getElementById('google-auth-btn').classList.add('visible');
@@ -1256,6 +1149,7 @@
                 updateGoogleStatus();
                 loadCalendarEvents();
                 loadCalendarMonthEvents();
+                console.log('✅ Autenticado con Google Calendar');
             },
         });
         gisInited = true;
@@ -1270,26 +1164,29 @@
 
     function checkAuthReady() {
         if (gapiInited && gisInited) {
-            const wasAuth = localStorage.getItem('googleAuthAttempted') === 'true';
-            if (wasAuth) {
-                setTimeout(() => {
-                    try { tokenClient.requestAccessToken({ prompt: '' }); } catch(e) {}
-                }, 200);
-                setTimeout(() => {
-                    if (!isAuthenticated) {
-                        document.getElementById('google-auth-btn').classList.add('visible');
-                        refreshIcons();
-                    }
-                }, 3000);
-            } else {
-                document.getElementById('google-auth-btn').classList.add('visible');
+            // Si volvemos con un token en el hash, significa que la redirección ha funcionado
+            var hasTokenInHash = window.location.hash && window.location.hash.indexOf('access_token') !== -1;
+            if (hasTokenInHash) {
+                console.log('🎉 Token recibido tras redirección, esperando callback...');
+                return;
             }
+            var wasAuth = localStorage.getItem('googleAuthAttempted') === 'true';
+            if (wasAuth) {
+                // Con redirect, no podemos reconectar silenciosamente sin salir de la página
+                // Mostramos el botón para que el usuario pulse cuando quiera
+                console.log('👤 Usa el botón para reconectar con Google');
+            }
+            document.getElementById('google-auth-btn').classList.add('visible');
             refreshIcons();
         }
     }
     function handleAuthClick() {
         if (!gapiInited || !gisInited) return;
-        tokenClient.requestAccessToken({ prompt: gapi.client.getToken() === null ? 'consent' : '' });
+        // Con ux_mode: 'redirect', no usamos prompt 'none' para reconexión silenciosa
+        // porque redirigiría cada vez. Usamos siempre 'consent' en la primera conexión
+        // y '' en reconexiones para que sea transparente.
+        var promptValue = gapi.client.getToken() === null ? 'consent' : '';
+        tokenClient.requestAccessToken({ prompt: promptValue });
     }
     window.handleAuthClick = handleAuthClick;
 
