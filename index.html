@@ -89,19 +89,13 @@
 
         .bottom-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: 0; }
 
-        /* --- Vistas --- */
         .view { display: none; height: 100%; width: 100%; }
         .view.active { display: flex; gap: 20px; }
 
         #view-dashboard.active { flex-direction: row; }
         #view-tasks.active { flex-direction: row; }
 
-        #view-weather.active {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            grid-template-rows: auto auto 1fr;
-            gap: 20px;
-        }
+        #view-weather.active { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto 1fr; gap: 20px; }
         #view-weather .weather-current-card { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; padding: 30px; }
         #view-weather .current-main { display: flex; align-items: center; gap: 30px; }
         #view-weather .current-main .icon-big { color: #f59e0b; display: flex; }
@@ -367,7 +361,6 @@
     // ==================== BOOT ====================
     console.log('🚀 Script iniciado');
 
-    // Función segura para leer localStorage
     function safeJSON(key, fallback) {
         try {
             const val = localStorage.getItem(key);
@@ -382,7 +375,16 @@
     const CLIENT_ID = '493262542322-u7esgck1r0n6o4hbth0uirqsup7mn0o4.apps.googleusercontent.com';
     const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
 
-    let settings = safeJSON('dashboardSettings', { latitude: 37.9922, longitude: -1.1307, cityName: 'Murcia' });
+    // ✅ Validación de settings con fallback
+    const DEFAULT_SETTINGS = { latitude: 37.9922, longitude: -1.1307, cityName: 'Murcia' };
+    let settings = safeJSON('dashboardSettings', DEFAULT_SETTINGS);
+    if (!settings || typeof settings.latitude !== 'number' || typeof settings.longitude !== 'number' || !settings.cityName) {
+        console.warn('⚠️ Settings corruptos, restaurando valores por defecto');
+        settings = DEFAULT_SETTINGS;
+        localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+    }
+    console.log('📋 Settings cargados:', settings);
+
     let tasks = safeJSON('dashboardTasks', []);
     let events = [];
     let tokenClient = null;
@@ -425,7 +427,7 @@
     });
     console.log('✅ Navegación lista');
 
-    // ==================== LUCIDE (iconos) ====================
+    // ==================== LUCIDE ====================
     function refreshIcons() {
         if (typeof lucide !== 'undefined' && lucide.createIcons) {
             try { lucide.createIcons(); } catch(e) { console.warn('Error lucide', e); }
@@ -484,18 +486,35 @@
         try {
             const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + settings.latitude + '&longitude=' + settings.longitude + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum&timezone=auto&forecast_days=7';
             const response = await fetch(url);
-            weatherCache = await response.json();
+
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+            }
+
+            const data = await response.json();
+
+            if (!data || !data.current || !data.hourly || !data.daily) {
+                throw new Error('Respuesta inválida de Open-Meteo');
+            }
+
+            weatherCache = data;
             renderWeather();
-            console.log('✅ Clima cargado');
+            console.log('✅ Clima cargado correctamente');
         } catch (error) {
             console.error('❌ Error clima:', error);
             const el = document.getElementById('weather-desc');
-            if (el) el.textContent = 'Error';
+            if (el) el.textContent = 'Error: ' + (error.message || 'desconocido');
+            const elLoc = document.getElementById('weather-location');
+            if (elLoc) elLoc.textContent = 'Reintentando en 30s...';
+            setTimeout(loadWeatherData, 30000);
         }
     }
 
     function renderWeather() {
-        if (!weatherCache) return;
+        if (!weatherCache || !weatherCache.current || !weatherCache.hourly || !weatherCache.daily) {
+            console.warn('renderWeather llamado sin datos válidos');
+            return;
+        }
         const { current, hourly, daily } = weatherCache;
         const wmo = WMO_CODES[current.weather_code] || { desc: 'Desconocido', icon: 'cloud' };
 
@@ -565,7 +584,10 @@
     }
 
     function drawWeather24hChart() {
-        if (!weatherCache || !weatherChart24) return;
+        if (!weatherCache || !weatherCache.hourly || !weatherCache.hourly.temperature_2m || !weatherChart24) {
+            console.warn('drawWeather24hChart: sin datos aún');
+            return;
+        }
         const { hourly } = weatherCache;
         const nowIndex = new Date().getHours();
         const labels = [], temps = [];
@@ -889,7 +911,6 @@
 
     updateGoogleStatus();
     console.log('✅ Todo inicializado');
-
 </script>
 </body>
 </html>
